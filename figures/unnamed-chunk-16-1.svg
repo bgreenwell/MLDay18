@@ -177,9 +177,9 @@
 <clipPath id="clip22">
   <path d="M 533.242188 93.613281 L 550.523438 93.613281 L 550.523438 180.011719 L 533.242188 180.011719 Z M 533.242188 93.613281 "/>
 </clipPath>
-<image id="image551" width="1" height="18" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAASCAIAAAAVNSPrAAAABmJLR0QA/wD/AP+gvaeTAAAASklEQVQImQXBwRJAIBRA0dzSTBIbTf/F/9vYeS3skmFyjtq3FR9hWDRuMZACXQqoOPHNjmoNj9XU3nC9ilwacjekNLKMnOI5sv8BKE8Ww+LVSrAAAAAASUVORK5CYII="/>
+<image id="image72" width="1" height="18" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAASCAIAAAAVNSPrAAAABmJLR0QA/wD/AP+gvaeTAAAASklEQVQImQXBwRJAIBRA0dzSTBIbTf/F/9vYeS3skmFyjtq3FR9hWDRuMZACXQqoOPHNjmoNj9XU3nC9ilwacjekNLKMnOI5sv8BKE8Ww+LVSrAAAAAASUVORK5CYII="/>
 <pattern id="pattern0" patternUnits="userSpaceOnUse" width="1" height="18"  patternTransform="matrix(17.28,0,0,4.8,533.243257,93.613521)">
-  <use xlink:href="#image551"/>
+  <use xlink:href="#image72"/>
 </pattern>
 <clipPath id="clip23">
   <path d="M 576 0 L 864 0 L 864 288 L 576 288 Z M 576 0 "/>
@@ -248,7 +248,7 @@
   <path d="M 856 5.480469 L 858 5.480469 L 858 257 L 856 257 Z M 856 5.480469 "/>
 </clipPath>
 </defs>
-<g id="surface547">
+<g id="surface68">
 <rect x="0" y="0" width="864" height="288" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
 <path style="fill:none;stroke-width:0.75;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-dasharray:3,3;stroke-miterlimit:10;" d="M 74.328125 205.476562 L 119.292969 148.597656 "/>
 <path style="fill:none;stroke-width:0.75;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(0%,0%,0%);stroke-opacity:1;stroke-dasharray:3,3;stroke-miterlimit:10;" d="M 119.292969 148.597656 L 217.394531 167.351562 "/>

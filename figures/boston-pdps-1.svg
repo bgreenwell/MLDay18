@@ -150,9 +150,9 @@
 <clipPath id="clip24">
   <path d="M 245.242188 93.621094 L 262.523438 93.621094 L 262.523438 180.019531 L 245.242188 180.019531 Z M 245.242188 93.621094 "/>
 </clipPath>
-<image id="image3084" width="1" height="11" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAALCAIAAAAx7HC4AAAABmJLR0QA/wD/AP+gvaeTAAAANUlEQVQImWN4EBbEJKjEwsSjxMXEpCLG9E9ZlOkbJxvTN042piffGZjuffrHdP85J9PNe0IA6z8NyVhbDQMAAAAASUVORK5CYII="/>
+<image id="image22" width="1" height="11" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAALCAIAAAAx7HC4AAAABmJLR0QA/wD/AP+gvaeTAAAANUlEQVQImWN4EBbEJKjEwsSjxMXEpCLG9E9ZlOkbJxvTN042piffGZjuffrHdP85J9PNe0IA6z8NyVhbDQMAAAAASUVORK5CYII="/>
 <pattern id="pattern0" patternUnits="userSpaceOnUse" width="1" height="11"  patternTransform="matrix(17.28,0,0,7.854545,245.243257,93.619521)">
-  <use xlink:href="#image3084"/>
+  <use xlink:href="#image22"/>
 </pattern>
 <clipPath id="clip25">
   <path d="M 288 0 L 576 0 L 576 288 L 288 288 Z M 288 0 "/>
@@ -229,12 +229,12 @@
 <clipPath id="clip49">
   <path d="M 533.242188 93.621094 L 550.523438 93.621094 L 550.523438 180.019531 L 533.242188 180.019531 Z M 533.242188 93.621094 "/>
 </clipPath>
-<image id="image3087" width="1" height="12" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAMCAIAAAAs6UAAAAAABmJLR0QA/wD/AP+gvaeTAAAAOUlEQVQImWO44xvIJKjEwsSvwMrErCrKxKAsxvRDgIvpKycb05v/TEz3P/1nuv+BgenePWGm8/cFAQfuDqJZWvsnAAAAAElFTkSuQmCC"/>
+<image id="image25" width="1" height="12" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAMCAIAAAAs6UAAAAAABmJLR0QA/wD/AP+gvaeTAAAAOUlEQVQImWO44xvIJKjEwsSvwMrErCrKxKAsxvRDgIvpKycb05v/TEz3P/1nuv+BgenePWGm8/cFAQfuDqJZWvsnAAAAAElFTkSuQmCC"/>
 <pattern id="pattern1" patternUnits="userSpaceOnUse" width="1" height="12"  patternTransform="matrix(17.28,0,0,7.2,533.243257,93.619521)">
-  <use xlink:href="#image3087"/>
+  <use xlink:href="#image25"/>
 </pattern>
 </defs>
-<g id="surface3080">
+<g id="surface18">
 <rect x="0" y="0" width="576" height="288" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
 <path style="fill-rule:nonzero;fill:rgb(100%,100%,100%);fill-opacity:1;stroke-width:1.066978;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(100%,100%,100%);stroke-opacity:1;stroke-miterlimit:10;" d="M 0 288 L 288 288 L 288 0 L 0 0 Z M 0 288 "/>
 <g clip-path="url(#clip1)" clip-rule="nonzero">

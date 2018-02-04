@@ -1,6 +1,6 @@
 ---
-title: "Random Forests and Gradient Boosting Machines"
-subtitle: "⚔<br/>in R"
+title: "Random Forests and Gradient Boosting Machines in R"
+subtitle: "\u2665<br/>GitHub: https://github.com/bgreenwell/MLDay18"
 author: "Brandon M. Greenwell"
 date: "02/14/2018"
 output:
@@ -17,28 +17,44 @@ output:
 
 # A good modelling tool
 
-* At a minimum:
+.pull-left[
 
-    - Universally applicable in classification and regression
-    
-    - Unexcelled accuracy
-    
-    - Capable of handling large data sets
-    
-    - Handle missing values effectively
+### At a minimum:
 
-* It would also be a plus to know:
+* Universally applicable in classification and regression
+    
+* Unexcelled accuracy
+    
+* Capable of handling large data sets
+    
+* Handle missing values effectively
 
-    - Which variables are important?
+]
+
+--
+
+.pull-right[
+
+### It would also be a plus to know:
+
+* Which variables are important?
     
-    - How do variables interact?
+* How do variables interact?
     
-    - What is the shape of the data---how does it cluster?
+* What is the shape of the data (i.e., how does it cluster?)
     
-    - How do the features separate classes?
+* How do the features separate classes?
     
-    - Are their novel cases and outliers?
+* Are their novel cases and outliers?
+
+]
     
+--
+
+<br/>
+
+.right[-Leo Breiman]
+
 
 ---
 class: inverse, center, middle
@@ -76,11 +92,13 @@ There is no simple rule for determining the edibility of a [mushroom](https://ra
 knitr::include_graphics("figures/edible.jpg")
 ```
 
+--
+
 ```{r mushroom-load, echo=TRUE}
 path <- paste0("https://raw.githubusercontent.com/bgreenwell/",
                "MLDay18/master/data/mushroom.csv")
 mushroom <- read.csv(path)
-mushroom$veil.type <- NULL  # only takes on a single value  
+mushroom$veil.type <- NULL  # only takes on a single value  #<<
 ```
 
 
@@ -93,8 +111,8 @@ mushroom$veil.type <- NULL  # only takes on a single value
 library(caret)  # for data splitting
 library(rpart)  # for binary recursive partitioning
 
-# Control for maximally complex tree
-ctrl <- list(cp = 0, minbucket = 1, minsplit = 1)
+# Control parameters for maximally complex tree
+ctrl <- list(cp = 0, minbucket = 1, minsplit = 1)  #<<
 
 # Partition the mushroom data into train/test sets
 set.seed(101)
@@ -166,9 +184,10 @@ accuracy(
 
 ---
 
-# Tree diagrams
+# Mushroom classification
 
 .pull-left[
+
 Shallow tree (test error = 0.54%):
 ```{r mushroom-tree-diagram-1, echo=FALSE, out.width="100%"}
 # Load required packages
@@ -185,9 +204,11 @@ prp(cart1,
     split.cex = 1.5,
     box.col = c("palegreen3", "pink")[cart1$frame$yval])
 ```
+
 ]
 
 .pull-right[
+
 Optimal tree (test error = 0%):
 ```{r mushroom-tree-diagram-2, echo=FALSE, out.width="100%"}
 # Tree diagram (shallow tree)
@@ -201,6 +222,7 @@ prp(cart2,
     split.cex = 1.5,
     box.col = c("palegreen3", "pink")[cart2$frame$yval])
 ```
+
 ]
 
 
@@ -208,15 +230,18 @@ prp(cart2,
 
 # Mushroom classification
 
-```{r rpart-vi}
-cart2$variable.importance[1L:3L]
-```
-
 ```{r mushroom-vi}
-# devtools::install_github("AFIT-R/vip") #<<
-vip::vi(cart2)[1L:8L, ]
+vip::vi(cart2)[1L:15L, ]
 ```
 
+
+---
+
+# Mushroom classification
+
+```{r mushroom-vip, out.width="60%"}
+vip::vip(cart2)
+```
 
 
 ---
@@ -300,10 +325,21 @@ prp(spam_tree,
 
 # Predicting email spam (single tree)
 
-```{r spam-vip, out.width="50%"}
+.pull-left[
+
+```{r spam-vi}
+vip::vi(spam_tree)
+```
+
+]
+
+.pull-right[
+
+```{r spam-vip, out.width="100%"}
 vip::vip(spam_tree)
 ```
 
+]
 
 
 ---
@@ -353,7 +389,26 @@ vip::vip(spam_tree)
 knitr::include_graphics("figures/esl-tbl.png")
 ```
 <br>
-.center[**Source:** The Elements of Statisticl Learning, Second Edition]
+.center[**Source:** The Elements of Statistical Learning, Second Edition]
+
+
+---
+
+# Other clever uses of trees
+
+* Missing value imputation
+
+* Hump hunting
+
+* Variable selection (natural given hierarchical structure of tree)
+
+* Can give a quick and dirty picture of your data (no matter how many dimensions)
+
+* Variable shaving
+
+* *Battery runs* (**Salford Systems**)
+
+* Break down high level categorical variables into smaller groups (i.e. reduce # levels)
 
 
 ---
@@ -550,6 +605,18 @@ background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/99/Fog_fo
 Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/media/File:Fog_forrest_frickberg.jpg)
 
 
+---
+
+# Background
+
+* Correlation limits the effect of bagging
+
+--
+
+```{r correlation, echo=FALSE, out.width="70%"}
+knitr::include_graphics("figures/correlation.png")
+```
+
 
 ---
 
@@ -663,7 +730,7 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 ### <span style="color:Tomato">Disadvantages:</span>
 
-* Missing values
+* Missing values (**why?**)
 
 * Trees are grown deep (intentionally), so can be slow on large data sets!
 
@@ -680,7 +747,7 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
 
 * For large enough $N$, on average, $1 - e^{-1}$ or the original records end up in any bootstrap sample
 
-* Thus, roughly $e^{-1}$ of the original obervations are not used in the construction of a particular tree
+* Thus, roughly $e^{-1}$ of the original observations are not used in the construction of a particular tree
 
 * The observations are considered *out-of-bag* (OOB)
 
@@ -693,7 +760,7 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
 
 # Variable importance
 
-* **Traditional approach:** Average variable importance scores (i.e., toal goodness of split) over all trees 
+* **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all trees 
 
 * **Novel approach:** To estimate the importance of the $k$-th variable:
 
@@ -703,9 +770,9 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
   
   3. Recompute the OOB performance of the model
   
-  4. The difference between the two OOB performance measures measrues the strength of the strucural importance of $x_k$
+  4. The difference between the two OOB performance measures measures the strength of the structural importance of $x_k$
   
-* FUndamentally different as these importanc measures are **NOT** based on data seen by the individual trees!
+* Fundamentally different as these importance measures are **NOT** based on data seen by the individual trees!
 
 
 ---
@@ -992,13 +1059,13 @@ prp(cart2,
 
     - Initialize the proximity between cases $i$ and $j$ to zero: $prox_{ij} = 0$
 
-    - After a tree is grown, put all of the data, both training and oob, down the tree
+    - After a tree is grown, put all of the data, both training and OOB, down the tree
 
     - If cases $i$ and $j$ are in the same terminal node, increase $prox_{ij}$ by one
 
     - At the end, normalize $prox_{ij}$ by dividing by the number of trees
 
-* The pairwise proximitiescan be used to construct a useful distance matrix
+* The pairwise proximities can be used to construct a useful distance matrix
 
 * Requires the storage of an $N \times N$ matrix!!
 
@@ -1051,7 +1118,7 @@ ggplot(outlyingness,
 .pull-right[
 
 ```{r outlier-plot, echo=FALSE, out.width="100%"}
-outlyingness <- tibble(
+outlyingness <- tibble::tibble(
   "out" = outlier(banknote_rf), 
   "obs" = seq_along(out),
   "class" = as.factor(banknote$Y)
@@ -1082,13 +1149,13 @@ MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 3)
 
 * Random forest offers a novel approach to imputing missing values (i.e., `NA`s)
 
-    1. Start with cheap impuation (e.g., median for continuous features)
+    1. Start with cheap imputation (e.g., median for continuous features)
     
     2. Run a random forest and obtain the proximity matrix
     
     3. Imputed values are updated using:
     
-        - The weighted average of the non-missing obervations, where the weights are the proximities (**continuous**)
+        - The weighted average of the non-missing observations, where the weights are the proximity (**continuous**)
         
         - The category with the largest average proximity (**categorical**)
 
@@ -1096,7 +1163,7 @@ MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 3)
 
 * Highly computational
 
-* Resulting OOB estimate of error tends to be verly ooptimistic
+* Resulting OOB estimate of error tends to be very optimistic
 
 
 ---
@@ -1221,6 +1288,21 @@ $$F_m\left(x\right) = F_{m - 1}\left(x\right) + v \times\gamma_m h_m\left(x\righ
 * `lightgbm`: Microsoft supported clone of `xgboost`
 
 * `mboost`: **M**odel-based **Boost**ing
+
+
+---
+
+# Missing values
+
+* Unlike RFs, GBMs typically support missing values!
+
+* In most GBM implementations, `NA`s are interpreted as containing information (i.e., missing for a reason), rather than missing at random
+
+    - `gbm`: Separate branch created at each split for `NA`s
+    
+    - `h2o`: `NA`s are treated as a separate category (hence go left or right)
+    
+    - `xgboost`:  Branch directions for `NA`s are learned during training
 
 
 ---
@@ -1367,7 +1449,11 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 * Parallel tree boosting
 
-* GPU support with fast histogram method
+* GPU support with fast histogram method!!
+
+```{r gpu, echo=FALSE, out.width="50%"}
+knitr::include_graphics("figures/gpu.jpg")
+```
 
 * Runs on many different platforms (including R, obviously!)
 
