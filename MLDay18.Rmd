@@ -1529,6 +1529,29 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 
 ---
+class: center, middle
+
+
+```{r xgboost-pdp-vi, echo=FALSE, fig.width=12, fig.height=8}
+# Partial dependence plots for the top/bottom three features
+ames_vi <- vi(ames_xgb, pred.var = colnames(X), type = "Gain")
+feats <- c(head(ames_vi, n = 3)$Variable, tail(ames_vi, n = 3)$Variable)
+pds <- lapply(feats, FUN = function(x) {
+  pd <- cbind(x, partial(ames_xgb, pred.var = x, train = X))
+  names(pd) <- c("xvar", "xval", "yhat")
+  pd
+})
+pds <- do.call(rbind, pds)
+ggplot(pds, aes(x = xval, y = yhat)) +
+  geom_line() +
+  geom_hline(yintercept = mean(ames$Sale_Price), linetype = 2, col = "red2") +
+  facet_wrap( ~ xvar, scales = "free_x") +
+  labs(x = "", y = "Partial dependence") +
+  theme_light()
+```
+
+
+---
 
 # Questions?
 
