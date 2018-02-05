@@ -682,7 +682,7 @@ spam_rf &lt;- randomForest(
 
 ---
 
-# Out-of-bag data
+# Out-of-bag (OOB) data
 
 * For large enough `\(N\)`, on average, `\(1 - e^{-1}\)` or the original records end up in any bootstrap sample
 
@@ -697,7 +697,7 @@ spam_rf &lt;- randomForest(
 
 ---
 
-# Variable importance
+# Variable importance in RFs
 
 * **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all trees 
 
@@ -1199,27 +1199,18 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 
 ---
+class: center, middle
 
-.pull-left[
+# Boosting regression stumps [R code](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
-### Boosting a weak learner:
-![](gifs/boosting-weak.gif)
-
-]
-
-.pull-right[
-
-### Boosting a complex learner:
-![](gifs/boosting-complex.gif)
-
-]
+![](gifs/boosted_stumps.gif)
 
 
 ---
 
 # GBM packages in R
 
-* `gbm`: **G**eneralized **B**oosted **M**odels
+* `gbm`: **g**eneralized **b**oosted **m**odels
 
     - The original R implementation of GMBs (by Greg Ridgeway)
     
@@ -1227,7 +1218,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
     - Currently orphaned on CRAN (for now)
     
-* `gbm3`: **G**eneralized **B**oosted **M**odels 
+* `gbm3`: **g**eneralized **b**oosted **m**odels 
 
     - Shiny new version of `gbm` that is not backwards compatible
     
@@ -1239,7 +1230,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 * `lightgbm`: Microsoft supported clone of `xgboost`
 
-* `mboost`: **M**odel-based **Boost**ing
+* `mboost`: **m**odel-based **boost**ing
 
 
 ---

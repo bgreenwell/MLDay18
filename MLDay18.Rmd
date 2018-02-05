@@ -743,7 +743,7 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
 
 ---
 
-# Out-of-bag data
+# Out-of-bag (OOB) data
 
 * For large enough $N$, on average, $1 - e^{-1}$ or the original records end up in any bootstrap sample
 
@@ -758,7 +758,7 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
 
 ---
 
-# Variable importance
+# Variable importance in RFs
 
 * **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all trees 
 
@@ -1247,27 +1247,18 @@ $$F_m\left(x\right) = F_{m - 1}\left(x\right) + v \times\gamma_m h_m\left(x\righ
 
 
 ---
+class: center, middle
 
-.pull-left[
+# Boosting regression stumps [R code](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
-### Boosting a weak learner:
-![](gifs/boosting-weak.gif)
-
-]
-
-.pull-right[
-
-### Boosting a complex learner:
-![](gifs/boosting-complex.gif)
-
-]
+![](gifs/boosted_stumps.gif)
 
 
 ---
 
 # GBM packages in R
 
-* `gbm`: **G**eneralized **B**oosted **M**odels
+* `gbm`: **g**eneralized **b**oosted **m**odels
 
     - The original R implementation of GMBs (by Greg Ridgeway)
     
@@ -1275,7 +1266,7 @@ $$F_m\left(x\right) = F_{m - 1}\left(x\right) + v \times\gamma_m h_m\left(x\righ
     
     - Currently orphaned on CRAN (for now)
     
-* `gbm3`: **G**eneralized **B**oosted **M**odels 
+* `gbm3`: **g**eneralized **b**oosted **m**odels 
 
     - Shiny new version of `gbm` that is not backwards compatible
     
@@ -1287,7 +1278,7 @@ $$F_m\left(x\right) = F_{m - 1}\left(x\right) + v \times\gamma_m h_m\left(x\righ
 
 * `lightgbm`: Microsoft supported clone of `xgboost`
 
-* `mboost`: **M**odel-based **Boost**ing
+* `mboost`: **m**odel-based **boost**ing
 
 
 ---
