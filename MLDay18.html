@@ -987,7 +987,7 @@ p3 &lt;- boston_ranger %&gt;%
 
 ---
 
-&lt;img src="figures/mushroom-tree-diagram-3-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/mushroom-tree-diagram-3-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1008,7 +1008,7 @@ p3 &lt;- boston_ranger %&gt;%
 
 * The pairwise proximities can be used to construct a useful distance matrix
 
-* Requires the storage of an `\(N \times N\)` matrix!!
+* **Requires the storage of an `\(N \times N\)` matrix!!** 😱
 
 
 ---
@@ -1412,13 +1412,11 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 * Designed to be highly **efficient**, **flexible**, and **portable**
 
-* Parallel tree boosting
-
-* GPU support with fast histogram method!!
+* Parallel tree boosting and **GPU support with fast histogram method!!**
 
 &lt;img src="figures/gpu.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 
-* Runs on many different platforms (including R, obviously!)
+* **Supports early stopping!!**
 
 
 ---
@@ -1447,7 +1445,8 @@ ames_xgb &lt;- xgboost(
 * colsample = 1,
 * num_parallel_tree = 1,
 * eval_metric = "rmse",
-  verbose = 0
+  verbose = 0,
+* save_period = NULL
 )
 ```
 

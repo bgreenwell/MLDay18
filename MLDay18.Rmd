@@ -1035,7 +1035,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-```{r mushroom-tree-diagram-3, echo=FALSE, out.width="100%"}
+```{r mushroom-tree-diagram-3, echo=FALSE, out.width="80%"}
 # Tree diagram (shallow tree)
 prp(cart2,
     type = 4,
@@ -1067,7 +1067,7 @@ prp(cart2,
 
 * The pairwise proximities can be used to construct a useful distance matrix
 
-* Requires the storage of an $N \times N$ matrix!!
+* **Requires the storage of an $N \times N$ matrix!!** `r emo::ji("scream")`
 
 
 ---
@@ -1438,20 +1438,18 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 * Designed to be highly **efficient**, **flexible**, and **portable**
 
-* Parallel tree boosting
-
-* GPU support with fast histogram method!!
+* Parallel tree boosting and **GPU support with fast histogram method!!**
 
 ```{r gpu, echo=FALSE, out.width="50%"}
 knitr::include_graphics("figures/gpu.jpg")
 ```
 
-* Runs on many different platforms (including R, obviously!)
+* **Supports early stopping!!**
 
 
 ---
 
-```{r}
+```{r ames-xgboost}
 # Load required packages
 library(xgboost)
 
@@ -1474,7 +1472,8 @@ ames_xgb <- xgboost(
   colsample = 1,          #<<
   num_parallel_tree = 1,  #<<
   eval_metric = "rmse",   #<<
-  verbose = 0
+  verbose = 0,
+  save_period = NULL      #<<
 )
 ```
 
