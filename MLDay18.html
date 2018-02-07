@@ -13,7 +13,7 @@
 class: center, middle, inverse, title-slide
 
 # Random Forests and Gradient Boosting Machines in R
-## ♥<br/>GitHub: <a href="https://github.com/bgreenwell/MLDay18" class="uri">https://github.com/bgreenwell/MLDay18</a>
+## ↟↟↟<br/>↟↟<br/><br/>GitHub: <a href="https://github.com/bgreenwell/MLDay18" class="uri">https://github.com/bgreenwell/MLDay18</a>
 ### Brandon M. Greenwell
 ### 02/14/2018
 
@@ -24,11 +24,11 @@ class: center, middle, inverse, title-slide
 
 .pull-left[
 
-### At a minimum:
+### &lt;span style="color:MediumSeaGreen"&gt;At a minimum:&lt;/span&gt;
 
-* Universally applicable in classification and regression
+* Applicable to classification and regression
     
-* Unexcelled accuracy
+* Competitive accuracy
     
 * Capable of handling large data sets
     
@@ -40,17 +40,17 @@ class: center, middle, inverse, title-slide
 
 .pull-right[
 
-### It would also be a plus to know:
+### &lt;span style="color:MediumSeaGreen"&gt;Bonus features:&lt;/span&gt;
 
 * Which variables are important?
     
-* How do variables interact?
+* How do the variables interact?
     
 * What is the shape of the data (i.e., how does it cluster?)
     
 * How do the features separate classes?
     
-* Are their novel cases and outliers?
+* Are their **novel cases and outliers**?
 
 ]
     
@@ -78,7 +78,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 # Mushroom classification
 
-There is no simple rule for determining the edibility of a [mushroom](https://raw.githubusercontent.com/bgreenwell/MLDay18/master/data/mushroom.csv); no rule like &lt;span style="color:Tomato"&gt;"leaflets three, let it be"&lt;/span&gt; for Poisonous Oak and Ivy.
+There is no simple rule for determining the edibility of a [mushroom](https://raw.githubusercontent.com/bgreenwell/MLDay18/master/data/mushroom.csv); no rules like **"leaflets three, let it be"**, **"hairy vine, no friend of mine"** and **"berries white, run in fright"** for poison ivy.
 
 &lt;img src="figures/edible.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 
@@ -103,12 +103,11 @@ mushroom &lt;- read.csv(path)
 library(caret)  # for data splitting
 library(rpart)  # for binary recursive partitioning
 
-# Control parameters for maximally complex tree
-*ctrl &lt;- list(cp = 0, minbucket = 1, minsplit = 1)
-
-# Partition the mushroom data into train/test sets
+# Partition the data into train/test sets
 set.seed(101)
-trn_id &lt;- createDataPartition(y = mushroom$Edibility, p = 0.5, list = FALSE)
+trn_id &lt;- createDataPartition(
+  y = mushroom$Edibility, p = 0.5, list = FALSE
+)
 trn &lt;- mushroom[trn_id, ]   # training data
 tst &lt;- mushroom[-trn_id, ]  # test data
 
@@ -125,13 +124,12 @@ accuracy &lt;- function(pred, obs) {
 
 .pull-left[
 
-Shallow tree (test error = 0.54%):
 
 ```r
-# Fit tree
+# Decision stump (test error = 0.54%):
 cart1 &lt;- rpart(
   Edibility ~ ., data = trn,
-* control = rpart.control()
+* control = rpart.control(maxdepth = 1)
 )
 
 # Get test set predictions
@@ -148,20 +146,19 @@ accuracy(
 ```
 
 ```
-## [1] 0.9945839
+## [1] 0.9847366
 ```
 
 ]
 
 .pull-right[
 
-Optimal tree (test error = 0%):
 
 ```r
-# Fit tree
+# Optimal tree (test error = 0%):
 cart2 &lt;- rpart(
   Edibility ~ ., data = trn, 
-* control = ctrl
+* control = list(cp = 0, minbucket = 1, minsplit = 1)
 )
 
 # Get test set predictions
@@ -190,7 +187,7 @@ accuracy(
 
 .pull-left[
 
-Shallow tree (test error = 0.54%):
+Shallow tree (test error = 1.53%):
 &lt;img src="figures/mushroom-tree-diagram-1-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
@@ -209,11 +206,12 @@ Optimal tree (test error = 0%):
 
 
 ```r
-vip::vi(cart2)[1L:15L, ]
+*library(vip)  # variable importance plots (experimental)
+vi(cart2)[1L:10L, ]  # variable importance scores (tibble)
 ```
 
 ```
-## # A tibble: 15 x 2
+## # A tibble: 10 x 2
 ##    Variable                 Importance
 ##    &lt;chr&gt;                         &lt;dbl&gt;
 ##  1 odor                        1915   
@@ -226,11 +224,6 @@ vip::vi(cart2)[1L:15L, ]
 ##  8 stalk.root                    13.8 
 ##  9 habitat                       11.0 
 ## 10 stalk.color.above.ring         8.81
-## 11 veil.color                     7.85
-## 12 cap.color                      7.45
-## 13 gill.spacing                   6.88
-## 14 cap.surface                    3.98
-## 15 cap.shape                      3.37
 ```
 
 
@@ -240,10 +233,10 @@ vip::vi(cart2)[1L:15L, ]
 
 
 ```r
-vip::vip(cart2)
+vip::vip(cart2, top_n = 10)  # variable importance plot (ggplot2)
 ```
 
-&lt;img src="figures/mushroom-vip-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/mushroom-vip-1.svg" width="55%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -257,7 +250,7 @@ vip::vip(cart2)
 &lt;span style="color:Tomato"&gt;&lt;font size="25"&gt;"If it smells bad, don't eat it!"&lt;/font&gt;&lt;/span&gt;
 &lt;/div&gt;]
 &lt;br&gt;
-.right[-Decision Tree]
+.right[-Decision Stump]
 
 
 ---
@@ -265,17 +258,21 @@ vip::vip(cart2)
 # Predicting email spam
 
 .pull-left[
+
 - Data from 4601 email messages collected at Hewlett-Packard Labs
 
 - **Goal:** predict whether an email message is &lt;span style="color:Tomato"&gt;spam&lt;/span&gt; (junk email) or &lt;span style="color:MediumSeaGreen "&gt;ham&lt;/span&gt; (good email)
 
 - **Features:** relative frequencies in a message of 57 of the most commonly occurring words and punctuation marks in all the training the email messages
 
-- For this problem not all errors are equal; we want to avoid filtering out &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt;, while letting &lt;span style="color:Tomato"&gt;spam&lt;/span&gt; get through is not desirable but less serious in its consequences
+- For this problem, not all errors are equal; misclassifying &lt;span style="color:Tomato"&gt;spam&lt;/span&gt; is not as bad as misclassifying &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt;!
+
 ]
 
 .pull-right[
+
 &lt;img src="figures/this-is-spam.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
 ]
 
 
@@ -285,8 +282,10 @@ vip::vip(cart2)
 
 
 ```r
-# Load and partition the data
+# Load the data
 *data(spam, package = "kernlab")
+
+# Partition the data into train/test sets
 set.seed(101)  # for reproducibility
 trn_id &lt;- createDataPartition(spam$type, p = 0.7, list = FALSE)
 trn &lt;- spam[trn_id, ]                # training data
@@ -323,7 +322,7 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 
 ```r
-vip::vi(spam_tree)
+vi(spam_tree)
 ```
 
 ```
@@ -349,7 +348,7 @@ vip::vi(spam_tree)
 
 
 ```r
-vip::vip(spam_tree)
+vip(spam_tree, top_n = 10)
 ```
 
 &lt;img src="figures/spam-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
@@ -375,21 +374,23 @@ vip::vip(spam_tree)
 
 * &lt;span style="color:MediumSeaGreen"&gt;Can handle missing data&lt;/span&gt; (through *surrogate splits*)
 
-* &lt;span style="color:MediumSeaGreen"&gt;Completely nonparametric&lt;/span&gt; (great for DM and EDA tasks)
+* &lt;span style="color:MediumSeaGreen"&gt;Completely nonparametric&lt;/span&gt; (great for DM and EDA tasks!)
 
 ]
+
+--
 
 .pull-right[
 
 ### Disadvantages:
+
+* &lt;span style="color:Tomato"&gt;Large trees can be difficult to interpret&lt;/span&gt;
 
 * &lt;span style="color:Tomato"&gt;Trees are step functions&lt;/span&gt; (i.e., binary splits)
 
 * &lt;span style="color:Tomato"&gt;Greedy splitting algorithms&lt;/span&gt; (i.e., trees are noisy)
 
 * &lt;span style="color:Tomato"&gt;All splits depend on previous splits&lt;/span&gt; (i.e., high order interactions)
-
-* &lt;span style="color:Tomato"&gt;Can be complex and un-interpretable---pruning helps to avoid this&lt;/span&gt;
 
 * &lt;span style="color:Tomato"&gt;Data is essentially taken away after each split&lt;/span&gt;
 
@@ -407,37 +408,18 @@ vip::vip(spam_tree)
 
 ---
 
-# Other clever uses of trees
+## Creating ensembles of trees
 
-* Missing value imputation
-
-* Hump hunting
-
-* Variable selection (natural given hierarchical structure of tree)
-
-* Can give a quick and dirty picture of your data (no matter how many dimensions)
-
-* Variable shaving
-
-* *Battery runs* (**Salford Systems**)
-
-* Break down high level categorical variables into smaller groups (i.e. reduce # levels)
-
-
----
-
-## Ensembles of trees
-
-- Bagging (simplest)
+- Bagging (simplest and has **zero tuning parameters!** 😎)
 
 - Random forest (a slight modification over bagged decision trees)
 
-- Boosting (lots of tuning parameters)
+- Boosting (can be more accurate, but **lots of tuning parameters!** 😱)
 
 &lt;br&gt;&lt;br&gt;
 
 &lt;center&gt;
-&lt;font size="8"&gt;&lt;span style="color:DarkBlue"&gt;Boosting&lt;/span&gt; &gt; &lt;span style="color:MediumSeaGreen"&gt;Random forest&lt;/span&gt; &gt; &lt;span style="color:MediumOrchid "&gt;Bagging&lt;/span&gt; &gt; &lt;span style="color:DarkOrange"&gt;Single tree&lt;/span&gt;&lt;/font&gt;
+&lt;font size="8"&gt;&lt;span style="color:DarkBlue"&gt;Boosting&lt;/span&gt; &gt;= &lt;span style="color:MediumSeaGreen"&gt;Random forest&lt;/span&gt; &gt; &lt;span style="color:MediumOrchid "&gt;Bagging&lt;/span&gt; &gt; &lt;span style="color:DarkOrange"&gt;Single tree&lt;/span&gt;&lt;/font&gt;
 &lt;/center&gt;
 
 
@@ -463,7 +445,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 * **B**ootstrap **agg**regat**ing**
 
-    1. Sample records with replacement (sampling can be stratified)
+    1. Sample records **with replacement**
     
     2. Fit model to resampled data set
     
@@ -565,7 +547,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 --
 
-&lt;img src="figures/correlation.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/correlation.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -578,32 +560,56 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
     - At each split in each tree in the forest, select a subset of the predictors as candidate splitters
     
-    - The number of randomly selected variables, denoted `\(m_{try}\)`, is a **tuning parameter**
+      - This essentially **"decorrelates" the trees!**
+    
+    - The number of randomly selected variables, denoted `\(m_{try}\)`, is a **tuning parameter** (really the only tuning parameter in a random forest)
 
 * Bagging introduces randomness into the rows of the data
 
 * Random forests introduce randomness into the rows and columns of the data
-
-    - This essentially **"decorrelates" the trees!**
 
 
 ---
 
 # Random forest packages in R
 
-* &lt;span style="color:MediumSeaGreen"&gt;`randomForest`&lt;/span&gt;---the standard (implements most **bells and whistles**; great for EDA!!)
+.pull-left[
 
-* &lt;span style="color:MediumSeaGreen"&gt;`randomForestSRC`&lt;/span&gt;---survival (includes *cometing risks*)
+* &lt;span style="color:MediumSeaGreen"&gt;`randomForest`&lt;/span&gt;
 
-* &lt;span style="color:MediumSeaGreen"&gt;`ranger`&lt;/span&gt;---fast!
+    - The standard (implements most **bells and whistles**; great for EDA!!)
 
-* &lt;span style="color:MediumSeaGreen"&gt;`party`/`partykit`&lt;/span&gt;---unbiased variable selection
+* &lt;span style="color:MediumSeaGreen"&gt;`randomForestSRC`&lt;/span&gt;
 
-* &lt;span style="color:MediumSeaGreen"&gt;`bigrf`&lt;/span&gt;---**ORPHANED** (classification only)
+    - Survival, regression and classification (including ***competing risks***)
 
-* &lt;span style="color:MediumSeaGreen"&gt;`Rborist`&lt;/span&gt;---parallelizable
+* &lt;span style="color:MediumSeaGreen"&gt;`ranger`&lt;/span&gt;
 
-* &lt;span style="color:MediumSeaGreen"&gt;`h2o`&lt;/span&gt;---fast and **can be stacked with other models!!**
+    - Survival, regression and classification (**Fast and suitable for high-dimensional problems!**)
+    
+    - Oh, and **estimated time to completion!!** 🤑
+
+]
+
+.pull-right[
+
+* &lt;span style="color:MediumSeaGreen"&gt;`party`/`partykit`&lt;/span&gt;
+
+    - Unbiased variable selection
+
+* &lt;span style="color:MediumSeaGreen"&gt;`bigrf`&lt;/span&gt;
+
+    - **ORPHANED** (classification only)
+
+* &lt;span style="color:MediumSeaGreen"&gt;`Rborist`&lt;/span&gt;
+
+    - Parallelizable
+
+* &lt;span style="color:MediumSeaGreen"&gt;`h2o`&lt;/span&gt;
+
+    - Distributd random forests (**can be stacked with other `h2o` models!!**)
+
+]
 
 
 ---
@@ -623,7 +629,7 @@ spam_rf &lt;- randomForest(
   type ~ ., 
   data = trn, 
   ntree = 250,
-* mtry = 7,
+* mtry = 7,  # floor(sqrt(p))
   xtest = subset(tst, select = -type),
   ytest = tst$type,
   keep.forest = TRUE
@@ -645,17 +651,17 @@ spam_rf &lt;- randomForest(
 
 ### &lt;span style="color:MediumSeaGreen"&gt;Advantages:&lt;/span&gt;
 
-* State of the art accuracy
+* Competitive accuracy
 
-* OOB data
+* *out-of-bag* data
 
-* Built-in (but unstructured) cross-validation
+* Free cross-validation
 
-* Variable importance (two types!)
+* Variable importance
 
-* Supervised and unsupervised mode
+* Supervised and unsupervised
 
-* Trees are intentionally grown deep (**Proximity matrix!!**)
+* Deep trees (**Proximity matrix!!**)
 
     - Novel cases and outliers
     
@@ -673,7 +679,7 @@ spam_rf &lt;- randomForest(
 
 * Missing values (**why?**)
 
-* Trees are grown deep (intentionally), so can be slow on large data sets!
+* Can be slow on large data sets (deep trees)!
 
 &lt;img src="figures/bells-and-whistles.jpg" width="100%" style="display: block; margin: auto;" /&gt;
 
@@ -682,26 +688,32 @@ spam_rf &lt;- randomForest(
 
 ---
 
-# Out-of-bag (OOB) data
+# Out-of-bag data
 
-* For large enough `\(N\)`, on average, `\(1 - e^{-1}\)` or the original records end up in any bootstrap sample
+* For large enough `\(N\)`, on average, `\(1 - e^{-1} \approx 63.21\)`% or the original records end up in any bootstrap sample
 
-* Thus, roughly `\(e^{-1}\)` of the original observations are not used in the construction of a particular tree
+* Thus, roughly `\(e^{-1} \approx 36.79\)`% of the original observations are not used in the construction of a particular tree
 
-* The observations are considered *out-of-bag* (OOB)
+* These observations are considered *out-of-bag* (OOB) and can be usd to
 
-* The observations can be used to provide an unbiased (but overly optimistic) estimate of accuracy (**sort of an unstructured, but free, cross-validation**)
+    - Provide an unbiased error estimates (**sort of an unstructured, but free, cross-validation**)
+ 
+    - Construct a novel variable importance measure based on the **predictive strength** of each feature!!
 
-* The OOB data can also be used to provide a novel approach to estimating "variable importance"!!
+
+---
+class: center, middle
+
+&lt;img src="figures/unnamed-chunk-6-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# Variable importance in RFs
+# OOB-based variable importance
 
 * **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all trees 
 
-* **Novel approach:** To estimate the importance of the `\(k\)`-th variable:
+* **Novel approach:** To estimate the importance of the `\(k\)`-th variable ($x_k$):
 
   1. Record the OOB performance of the model
   
@@ -709,20 +721,22 @@ spam_rf &lt;- randomForest(
   
   3. Recompute the OOB performance of the model
   
-  4. The difference between the two OOB performance measures measures the strength of the structural importance of `\(x_k\)`
+  4. The difference between the two OOB performance measures the strength of the structural importance of `\(x_k\)`
   
-* Fundamentally different as these importance measures are **NOT** based on data seen by the individual trees!
+* Fundamentally different as these importance scores are **NOT** based on data seen by the individual trees!
 
 
 ---
 
 # Boston housing example
 
+* Housing data from `\(N = 506\)` census tracts in the city of Boston for the year 1970
+
 * The data violate many classical assumptions like linearity, normality, and constant variance
 
-* Housing data from `\(n = 506\)` census tracts in the city of Boston for the year 1970
+--
 
-* Harrison and Rubinfeld's housing value equation ($R^2 = 0.81$):
+* Harrison and Rubinfeld's housing value equation ( `\(R^2 = 0.81\)` ):
 
 &lt;img src="figures/boston-eqn.png" width="80%" style="display: block; margin: auto;" /&gt;
 
@@ -730,10 +744,7 @@ spam_rf &lt;- randomForest(
 
 * Nowadays, many supervised learning algorithms can fit the data automatically in seconds---typically with higher accuracy!
 
-* The downfall, however, is some loss of interpretation since these algorithms typically do not produce simple prediction
-formulas 
-
-* These models can still provide insight into the data, but it is not in the form of simple equations
+* The downfall, however, is some loss of interpretation since these algorithms typically do not produce simple prediction formulas (**but there's still hope!** 🙏)
 
 
 ---
@@ -756,13 +767,16 @@ set.seed(2007)  # for reproducibility
 system.time(
   boston_rf &lt;- randomForest(
     cmedv ~ ., data = boston, 
-    ntree = 5000)
+    ntree = 5000,
+    mtry = 5,
+    importance = FALSE
+  )
 )
 ```
 
 ```
 ##    user  system elapsed 
-##   6.801   0.064   6.868
+##   6.996   0.070   7.064
 ```
 
 ```
@@ -779,14 +793,17 @@ system.time(
 set.seed(1652)  # for reproducibility
 system.time(
   boston_ranger &lt;- ranger(
-    cmedv ~ ., data = boston, mtry = 5,  ## :/
-    num.trees = 5000, importance = "impurity")
+    cmedv ~ ., data = boston, 
+    num.trees = 5000, 
+*   mtry = 5,  # :/
+    importance = "impurity"
+  )
 )
 ```
 
 ```
 ##    user  system elapsed 
-##   5.652   0.048   0.836
+##   5.433   0.039   0.788
 ```
 
 ```
@@ -804,15 +821,13 @@ system.time(
 
 .pull-left[
 
-* Most RF packages provide variable importance measures
+* Most RF packages provide variable importance measures, but not all of them provide variable importance plots (VIPs)
 
-* Not all RF packages provide variable importance plots (VIPs)
+* The `vip` package provides a consistent framework for extracting and plotting variable importance scores from many types of ML models (not just RFs)
 
-* The `vip` package (**experimental**) provides a consistent way of extracting variable importance scores from many types of models (not just RFs)
+* `vi()` always returns a `tibble`
 
-* The `vi()` function always returns a `tibble` containing the variable variable importance scores
-
-* The `vip()` function constructs `ggplot2`-based VIPs!
+* `vip()` always returns a `ggplot2` object
 
 ]
 
@@ -820,12 +835,11 @@ system.time(
 
 
 ```r
-# Not yet on CRAN
+# Not yet on CRAN (experimental)
 devtools::install_github("AFIT-R/vip")
 ```
 
 &lt;img src="../devel/vip/tools/vip-logo.png" width="80%" style="display: block; margin: auto;" /&gt;
-
 ]
 
 
@@ -861,9 +875,9 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 # Partial dependence plots
 
-* Constructing a PDP in practice is rather straightforward
+* Constructing a PDP in practice is rather straightforward!! 😎
 
-* To construct a PDP, let `\(\boldsymbol{z}_s = x_1\)` be the predictor variable of interest with unique values `\(\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}\)`
+* Let `\(x_1\)` be the predictor variable of interest with unique values `\(\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}\)`
 
 * The partial dependence of the response on `\(x_1\)` can be constructed as follows:
 
@@ -877,10 +891,6 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
     2. Plot the pairs `\(\left\{x_{1i}, \bar{f}_1\left(x_{1i}\right)\right\}\)` for `\(i = 1, 2, \dotsc, k\)`
 
-* This algorithm can be quite computationally intensive since it involves `\(k\)` passes over the training records
-
-* Fortunately, the algorithm can be parallelized quite easily
-
 
 ---
 
@@ -890,13 +900,11 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 * Not all RF implementations provide support for constructing PDPs
 
-    - `randomForest` does, but only one variable at a time! Same goes for `randomForestSRC` and `h2o` (but both provide standard errors)!
-
 * The `pdp` package:
 
-    - Provides a consistent way of constructing PDPs (and more) from many types of models (not just RFs)
+    - Provides a consistent way of constructing PDPs (and more) from many types of ML models (not just RFs)
 
-    - allows for multivariate displays (i.e., interactions)
+    - Allows for multivariate displays (i.e., interactions) and so much more!!
 
 * Read the paper: https://journal.r-project.org/archive/2017/RJ-2017-016/index.html
 
@@ -930,9 +938,8 @@ library(pdp)
 # PDPs for the top two predictors
 p1 &lt;- partial(boston_ranger, pred.var = "lstat", plot = TRUE)
 p2 &lt;- partial(boston_ranger, pred.var = "rm", plot = TRUE)
-p3 &lt;- partial(boston_ranger, pred.var = c("lstat", "rm"), 
-*             chull = TRUE,
-              plot = TRUE)
+*p3 &lt;- partial(boston_ranger, pred.var = c("lstat", "rm"),
+*             chull = TRUE, plot = TRUE)
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
@@ -943,7 +950,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 # Partial dependence plots: `pdp`
 
-**3-D plots**
+**3-D plots:**
 
 ```r
 *pd &lt;- attr(p3, "partial.data")  # no need to recalculate
@@ -953,17 +960,17 @@ p1 &lt;- plotPartial(pd,
 )
 ```
 
-**ggplot2-based graphs**
+**ggplot2-based graphics:**
 
 ```r
 library(ggplot2)
 p2 &lt;- autoplot(pd)
 ```
 
-**ICE and c-ICE curves**
+**ICE and c-ICE curves:**
 
 ```r
-p3 &lt;- boston_ranger %&gt;%
+p3 &lt;- boston_ranger %&gt;%  # %&gt;% is automatically imported!
   partial(pred.var = "rm", ice = TRUE, center = TRUE) %&gt;%
   autoplot(alpha = 0.1)
 ```
@@ -973,7 +980,7 @@ p3 &lt;- boston_ranger %&gt;%
 
 # Partial dependence plots: `pdp`
 
-&lt;img src="figures/unnamed-chunk-16-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/unnamed-chunk-15-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -982,7 +989,7 @@ p3 &lt;- boston_ranger %&gt;%
 
 * One of the most useful tools in random forests
 
-* In random forests (and bagging), trees are grown intentionally deep!
+* In random forests (and bagging), **trees are intentionally grown deep**!
 
 
 ---
@@ -994,17 +1001,17 @@ p3 &lt;- boston_ranger %&gt;%
 
 # Proximity matrix
 
-* One of the most useful tools in random forests
+* One of the most useful tools provided by random forests
 
-* In random forests (and bagging), trees are grown intentionally deep!
+* In random forests (and bagging), **trees are intentionally grown deep**!
 
-    - Initialize the proximity between cases `\(i\)` and `\(j\)` to zero: `\(prox_{ij} = 0\)`
+    1. Initialize the proximity between cases `\(i\)` and `\(j\)` to zero: `\(prox_{ij} = 0\)`
 
-    - After a tree is grown, put all of the data, both training and OOB, down the tree
+    2. After a tree is grown, put all of the data, both training and OOB, down the tree
 
-    - If cases `\(i\)` and `\(j\)` are in the same terminal node, increase `\(prox_{ij}\)` by one
+    3. If cases `\(i\)` and `\(j\)` land in the same terminal node, increase `\(prox_{ij}\)` by one
 
-    - At the end, normalize `\(prox_{ij}\)` by dividing by the number of trees
+    4. At the end, normalize `\(prox_{ij}\)` by dividing by the number of trees in the forest
 
 * The pairwise proximities can be used to construct a useful distance matrix
 
@@ -1015,27 +1022,24 @@ p3 &lt;- boston_ranger %&gt;%
 
 # Swiss banknote data
 
-* Six measurements made on 100 genuine Swiss banknotes and 100 counterfeit ones
-
 
 ```r
+# Load the data
 data(banknote, package = "alr3")
-set.seed(1701)
-banknote_rf &lt;- randomForest(as.factor(Y) ~ ., data = banknote, 
-                            importance = TRUE, proximity = TRUE)
-banknote_rf
+
+# Fit a random forest
+set.seed(1701)  # for reproducibility
+banknote_rf &lt;- randomForest(
+  as.factor(Y) ~ ., 
+  data = banknote, 
+* proximity = TRUE
+)
+
+# Print the OOB confusion matrix
+banknote_rf$confusion
 ```
 
 ```
-## 
-## Call:
-##  randomForest(formula = as.factor(Y) ~ ., data = banknote, importance = TRUE,      proximity = TRUE) 
-##                Type of random forest: classification
-##                      Number of trees: 500
-## No. of variables tried at each split: 2
-## 
-##         OOB estimate of  error rate: 0.5%
-## Confusion matrix:
 ##    0   1 class.error
 ## 0 99   1        0.01
 ## 1  0 100        0.00
@@ -1056,20 +1060,22 @@ heatmap(banknote_rf$proximity, col = viridis::plasma(256))
 
 ---
 
-# Outlying measures
+# Outlier scores
 
 .pull-left[
 
 
 ```r
+# Dot chart of outlier scores
 outlyingness &lt;- tibble(
-  "out" = outlier(banknote_rf), 
+* "out" = outlier(banknote_rf),
   "obs" = seq_along(out),
-  "class" = as.factor(banknote$Y))
-ggplot(outlyingness, 
-       aes(x = obs, y = out)) +
-  geom_point(aes(color = class)) +
-  geom_hline(yintercept = 10) +
+  "class" = as.factor(banknote$Y)
+)
+ggplot(outlyingness, aes(x = obs, y = out)) +
+  geom_point(aes(color = class, size = out), alpha = 0.5) +
+  geom_hline(yintercept = 10, linetype = 2) +
+  labs(x = "Observtion", y = "Outlyingness")
   theme_light() +
   theme(legend.position = "none")
 ```
@@ -1089,10 +1095,10 @@ ggplot(outlyingness,
 
 
 ```r
-MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 3)
+MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 2, cex = 1.5)
 ```
 
-&lt;img src="figures/MDS-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/MDS-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1113,9 +1119,9 @@ MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 3)
 
     4. Iterate this procedure until convergence (~ 4-6 times seems sufficient)
 
-* Highly computational
+* Highly computational (requires many random forest runs!!)
 
-* Resulting OOB estimate of error tends to be very optimistic
+* Resulting **OOB error estimate tends to be overly optimistic** 
 
 
 ---
@@ -1182,7 +1188,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 * Subsampling fraction
 
-* **And many more depending on implementation!**
+* **And many more depending on the implementation!** (ya, I'm talking about you, `xgboost` 😏)
 
 
 ---
@@ -1197,6 +1203,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 `$$F_m\left(x\right) = F_{m - 1}\left(x\right) + v \times\gamma_m h_m\left(x\right), \quad 0 &lt; v \le 1$$`
 
+* [R code for gradient boosted regression trees with squared-error loss](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
 ---
 class: center, middle
@@ -1228,7 +1235,7 @@ class: center, middle
 
 * `xgboost`: R interface to XGBoost for &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
 
-* `lightgbm`: Microsoft supported clone of `xgboost`
+* `lightgbm`: Microsoft supported **?**competitor to `xgboost`**?**
 
 * `mboost`: **m**odel-based **boost**ing
 
@@ -1241,11 +1248,9 @@ class: center, middle
 
 * In most GBM implementations, `NA`s are interpreted as containing information (i.e., missing for a reason), rather than missing at random
 
-    - `gbm`: Separate branch created at each split for `NA`s
+    - In `gbm` and `gbm3`, a separate branch is created at each split for `NA`s (i.e., each decision node contains three splits: left, right, and missing)
     
-    - `h2o`: `NA`s are treated as a separate category (hence go left or right)
-    
-    - `xgboost`:  Branch directions for `NA`s are learned during training
+    - In `h2o` and `xgboost` each split has a **default direction** that is learned during training (`NA`s take the default route!)
 
 
 ---
@@ -1254,7 +1259,10 @@ class: center, middle
 
 
 ```r
+# Load required packages
 library(gbm)
+
+# Fit a GBM to the Boston housing data
 set.seed(1053)  # for reproducibility
 boston_gbm &lt;- gbm(
   cmedv ~ ., 
@@ -1269,6 +1277,14 @@ boston_gbm &lt;- gbm(
 * train.fraction = 1,
   cv.folds = 10
 )
+```
+
+```
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'setup'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'setup'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'setup'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'setup'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'setup'&gt;
 ```
 
 
@@ -1290,22 +1306,19 @@ best_iter &lt;- gbm.perf(
 
 # GBMs and PDPs
 
-* PDPs can be slow to construct using the brute force method:
-
-    - It involves making multiple copies of the training data!!
+* PDPs can be slow to construct using the brute force method (**it involves making multiple copies of the training data!!**)
     
 * The exception is decision trees based on single-variable splits which can make use of the efficient *weighted tree traversal method* described in Friedman (2001)
 
-    - However, only the `gbm` and `gbm3` package seems to make use of this
-approach 
+    - However, only the `gbm` and `gbm3` packages utilize this approach 
 
     - The `pdp` package:
 
-        - also exploits this strategy when used with `gbm` models
+        - Also exploits this strategy when used with `gbm` models
 
-        - has the option to construct PDPs in parallel using any parallel back end supported by `foreach`
+        - Has the option to construct PDPs in parallel using any parallel back end supported by the `foreach` package
 
-        - allows for user specified grids (e.g., plotting over the deciles of a feature is much faster and often sufficient to reveal functional relationships!)
+        - Allows for user specified grids (e.g., plotting over the deciles of a feature is much faster and often sufficient to reveal functional relationships!)
 
 
 ---
@@ -1318,7 +1331,7 @@ approach
 system.time(
   pd1 &lt;- partial(
     boston_gbm, 
-    pred.var = c("lon", "nox"), 
+    pred.var = c("lon", "nox"),
 *   recursive = FALSE,
     chull = TRUE, 
 *   n.trees = best_iter
@@ -1328,7 +1341,7 @@ system.time(
 
 ```
 ##    user  system elapsed 
-## 107.330   0.019 107.355
+##  106.64    0.00  106.74
 ```
 
 ]
@@ -1378,7 +1391,7 @@ grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 
 * Contains the sale of individual residential property in Ames, Iowa from 2006 to 2010
 
-* Contains `\(n = 2930\)` observations and `\(p = 80\)` features involved in assessing home values
+* Contains `\(N = 2930\)` observations and `\(p = 80\)` features involved in assessing home values
 
 * Lots of potential for *feature engineering*!!
 
@@ -1390,11 +1403,10 @@ grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 ```r
 ames &lt;- AmesHousing::make_ames()
 ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) + 
-  ggridges::geom_density_ridges(aes(fill = Overall_Qual)) +
+* ggridges::geom_density_ridges(aes(fill = Overall_Qual)) +
   scale_x_continuous(labels = scales::dollar) +
   labs(x = "Sale price", y = "Overall quality") +
-  theme_light() +
-  theme(legend.position = "none")
+  theme_light() + theme(legend.position = "none")
 ```
 
 &lt;img src="figures/ames-densities-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
@@ -1453,8 +1465,11 @@ ames_xgb &lt;- xgboost(
 
 ---
 
+# Ames housing data
+
 
 ```r
+# Variable importance scores
 vi(ames_xgb, pred.var = colnames(X), type = "Gain")
 ```
 
@@ -1478,6 +1493,8 @@ vi(ames_xgb, pred.var = colnames(X), type = "Gain")
 
 ---
 
+# Ames housing data
+
 
 ```r
 # Variable importance plots
@@ -1492,17 +1509,21 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
+# Ames housing data
+
 
 ```r
-# By default, `vip()` plots 10 most important features
+# By default, `vip()` plots the top 10 features
 vip(ames_xgb, pred.var = colnames(X), type = "Gain", 
     top_n = nrow(X), bar = FALSE)
 ```
 
-&lt;img src="figures/xgboost-vip-2-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/xgboost-vip-2-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
+
+# Ames housing data
 
 
 ```r
@@ -1519,7 +1540,8 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 
 ---
-class: center, middle
+
+# Ames housing data
 
 
 &lt;img src="figures/xgboost-pdp-vi-1.svg" style="display: block; margin: auto;" /&gt;
