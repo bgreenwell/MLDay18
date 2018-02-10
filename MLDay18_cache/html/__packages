@@ -11,3 +11,6 @@ pdp
 gbm
 bindrcpp
 xgboost
+shiny
+R6
+lightgbm
