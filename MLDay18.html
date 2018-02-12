@@ -6,7 +6,7 @@
     <meta name="author" content="Brandon M. Greenwell" />
     <meta name="date" content="2018-02-14" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="scrollable.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -21,6 +21,8 @@ class: center, middle, inverse, title-slide
 
 
 # R package prerequisites
+
+.scrollable-code[
 
 
 ```r
@@ -45,14 +47,18 @@ install.packages(
 devtools::install_github("AFIT-R/vip")  # for variable importance plots
 ```
 
+]
+
 
 ---
 
 # Data set information
 
+.scrollable[
+
 .pull-left[
 
-### Classification
+### Classification:
 
 * [mushroom](https://archive.ics.uci.edu/ml/datasets/mushroom)
 
@@ -60,7 +66,7 @@ devtools::install_github("AFIT-R/vip")  # for variable importance plots
 
 * [spam](http://search.r-project.org/library/kernlab/html/spam.html)
 
-    - 57 variables on 4601 e-mails classified as &lt;span style="color:Tomato"&gt;spam&lt;/span&gt;  or &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt; 
+    - 57 variables on 4601 emails classified as &lt;span style="color:Tomato"&gt;spam&lt;/span&gt;  or &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt; 
 
 * [banknote](http://search.r-project.org/library/alr3/html/banknote.html)
 
@@ -70,7 +76,7 @@ devtools::install_github("AFIT-R/vip")  # for variable importance plots
 
 .pull-right[
 
-### Regression
+### Regression:
 
 * [boston](http://search.r-project.org/library/pdp/html/boston.html)
 
@@ -80,6 +86,8 @@ devtools::install_github("AFIT-R/vip")  # for variable importance plots
 
     - Data describing the sale of individual residential property in Ames, Iowa
 from 2006 to 2010
+
+]
 
 ]
 
@@ -108,13 +116,13 @@ from 2006 to 2010
 
 ### &lt;span style="color:MediumSeaGreen"&gt;Bonus features:&lt;/span&gt;
 
-* Which predictors are important?
+* Which predictors are important? ([`vip`](https://github.com/AFIT-R/vip))
+
+* How do the predictors functionally relate to the response? ([`pdp`](https://journal.r-project.org/archive/2017/RJ-2017-016/index.html))
     
-* How do the predictors interact?
+* How do the predictors interact? ([`pdp`](https://journal.r-project.org/archive/2017/RJ-2017-016/index.html), [`vip`](https://github.com/AFIT-R/vip))
     
 * What is the shape of the data (i.e., how does it cluster?)
-    
-* How do the predictors functionally relate to the response?
     
 * Are their novel cases and outliers?
 
@@ -266,40 +274,43 @@ Optimal tree (test error = 0%):
 
 # Mushroom classification
 
+.pull-left[
+
 
 ```r
-# Extract variable importance scores (tibble)
-vip::vi(cart2)[1L:10L, ]
+# Extract tibble of variable importance scores
+*vip::vi(cart2, trun = 10L)[1L:10L, ]
 ```
 
 ```
 ## # A tibble: 10 x 2
-##    Variable                 Importance
-##    &lt;chr&gt;                         &lt;dbl&gt;
-##  1 odor                        1915   
-##  2 spore.print.color           1414   
-##  3 gill.color                  1176   
-##  4 ring.type                   1022   
-##  5 stalk.surface.above.ring    1022   
-##  6 stalk.surface.below.ring    1011   
-##  7 stalk.color.below.ring        31.6 
-##  8 stalk.root                    13.8 
-##  9 habitat                       11.0 
-## 10 stalk.color.above.ring         8.81
+##    Variable   Importance
+##    &lt;chr&gt;           &lt;dbl&gt;
+##  1 odor          1915   
+##  2 spore.prin    1414   
+##  3 gill.color    1176   
+##  4 ring.type     1022   
+##  5 stalk.surf    1022   
+##  6 stalk.surf    1011   
+##  7 stalk.colo      31.6 
+##  8 stalk.root      13.8 
+##  9 habitat         11.0 
+## 10 stalk.colo       8.81
 ```
 
+]
 
----
-
-# Mushroom classification
+.pull-right[
 
 
 ```r
-# Construct variable importance plot (ggplot2)
-vip::vip(cart2, top_n = 10)  
+# Construct ggplot2-based variable importance plot
+*vip::vip(cart2, num_features = 10)
 ```
 
-&lt;img src="figures/mushroom-vip-1.svg" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/mushroom-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
 
 
 ---
@@ -385,24 +396,25 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 
 ```r
-vi(spam_tree)
+# Extract tibble of variable importance scores
+*vip::vi(spam_tree)
 ```
 
 ```
-## # A tibble: 46 x 2
+## # A tibble: 48 x 2
 ##    Variable        Importance
 ##    &lt;chr&gt;                &lt;dbl&gt;
-##  1 charExclamation      505  
-##  2 capitalLong          247  
-##  3 free                 198  
-##  4 charDollar           195  
-##  5 capitalAve           191  
-##  6 your                 180  
+##  1 charExclamation      508  
+##  2 capitalLong          260  
+##  3 capitalAve           199  
+##  4 free                 198  
+##  5 charDollar           195  
+##  6 your                 183  
 ##  7 remove               177  
-##  8 all                  126  
-##  9 capitalTotal         103  
-## 10 hp                    71.0
-## # ... with 36 more rows
+##  8 all                  127  
+##  9 capitalTotal         108  
+## 10 hp                    74.3
+## # ... with 38 more rows
 ```
 
 ]
@@ -411,7 +423,8 @@ vi(spam_tree)
 
 
 ```r
-vip(spam_tree, top_n = 10)
+# Construct ggplot2-based variable importance plot
+*vip(spam_tree, num_features = 10)
 ```
 
 &lt;img src="figures/spam-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
@@ -640,28 +653,65 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 # Random forest packages in R
 
+.scrollable[
+
 .pull-left[
 
-* [`randomForest`](https://cran.r-project.org/package=randomForest): the standard (implements most **bells and whistles**; great for EDA!!)
+* [`randomForest`](https://cran.r-project.org/package=randomForest)
 
-* [`randomForestSRC`](https://kogalur.github.io/randomForestSRC/index.html): survival, regression and classification (including ***competing risks***); MPI/OpenMP support
+    - The standard (implements most of the **bells and whistles**; great for EDA!!)
+    
+    - Classification and regression
+    
+    - Does not scale well, but can be parallelized using `foreach`!
 
-* [`ranger`](https://github.com/imbs-hl/ranger): survival, regression and classification (**suitable for high-dimensional problems!**); **estimated time to completion!!** 🤑
+* [`randomForestSRC`](https://kogalur.github.io/randomForestSRC/index.html)
+
+    - Classification, regression, and survival analysis (including ***competing risks***)
+    
+    - MPI/OpenMP support
+
+* [`ranger`](https://github.com/imbs-hl/ranger)
+
+    - Classification, regression, and survival analysis
+    
+    - [Fast!](https://www.jstatsoft.org/article/view/v077i01)
+    
+    - Estimated time to completion!! 🤑
 
 ]
 
 .pull-right[
 
-* [`party`/`partykit`](https://cran.r-project.org/web/packages/party/index.html): *confitional inference trees* with unbiased variable selection
+* [`party`/`partykit`](https://cran.r-project.org/web/packages/party/index.html)
 
-* [`bigrf`](https://github.com/aloysius-lim/bigrf): **ORPHANED** (classification only)
+    - Uses *conditional inference trees* as the base learners
+    
+    - Unbiased variable selection
+    
+    - Can be slow on large data sets
 
-* [`Rborist`](https://github.com/suiji/Arborist): distributd random forests
+* [`bigrf`](https://github.com/aloysius-lim/bigrf)
 
-* [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-r): distributd random forests (**can be stacked with other `h2o` models!!**)
+  - Classification only
+
+  - Currently **ORPHANED** on CRAN
+  
+  - Disk caching using [`bigmmory`](https://cran.r-project.org/web/packages/bigmemory/)
+
+* [`Rborist`](https://github.com/suiji/Arborist)
+
+    - Offers parallel, distributed tree construction
+
+* [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-r)
+
+  - Distributd random forests via cloud computing
+  
+  - Can be stacked with other `h2o` models!!
 
 ]
 
+]
 
 ---
 
@@ -698,6 +748,8 @@ spam_rf &lt;- randomForest(
 
 ---
 
+# Random forest
+
 .pull-left[
 
 ### &lt;span style="color:MediumSeaGreen"&gt;Advantages:&lt;/span&gt;
@@ -730,7 +782,7 @@ spam_rf &lt;- randomForest(
 
     - `\(m_{try}\)` mitigates this issue to some extent
 
-&lt;img src="figures/bells-and-whistles.jpg" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/bells-and-whistles.jpg" width="80%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -740,6 +792,18 @@ spam_rf &lt;- randomForest(
 # Out-of-bag data
 
 * For large enough `\(N\)`, on average, `\(1 - e^{-1} \approx 63.21\)`% or the original records end up in any bootstrap sample
+
+
+```r
+N &lt;- 100000
+set.seed(1537)
+x &lt;- rnorm(N)
+mean(x %in% sample(x, replace = TRUE))
+```
+
+```
+## [1] 0.63232
+```
 
 * Thus, roughly `\(e^{-1} \approx 36.79\)`% of the original observations are not used in the construction of a particular tree
 
@@ -1045,8 +1109,6 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 # Proximity matrix
 
-* One of the most useful tools in random forests
-
 * In random forests (and bagging), **trees are intentionally grown deep**!
 
 
@@ -1304,7 +1366,7 @@ class: center, middle
     
 * [`xgboost`](https://github.com/dmlc/xgboost): R interface to XGBoost for &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
 
-* [`lightgbm`](https://github.com/Microsoft/LightGBM): Microsoft supported, and somewhat [faster](https://github.com/Microsoft/LightGBM/blob/master/docs/Experiments.rst#comparison-experiment), alternative to `xgboost`
+* [`lightgbm`](https://github.com/Microsoft/LightGBM): Microsoft supported, and somewhat [faster](https://github.com/Microsoft/LightGBM/blob/master/docs/Experiments.rst#comparison-experiment), alternative to `xgboost` (uses *leaf-wise* tree growth)
 
 * [`mboost`](https://github.com/boost-R): **m**odel-based **boost**ing
 
@@ -1537,7 +1599,7 @@ ames_xgb &lt;- xgboost(
 
 ```r
 # Variable importance scores
-vi(ames_xgb, pred.var = colnames(X), type = "Gain")
+vi(ames_xgb, feature_names = colnames(X), type = "Gain")
 ```
 
 ```
@@ -1565,9 +1627,9 @@ vi(ames_xgb, pred.var = colnames(X), type = "Gain")
 
 ```r
 # Variable importance plots
-p1 &lt;- vip(ames_xgb, pred.var = colnames(X), type = "Gain")
-p2 &lt;- vip(ames_xgb, pred.var = colnames(X), type = "Cover")
-p3 &lt;- vip(ames_xgb, pred.var = colnames(X), type = "Frequency")
+p1 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Gain")
+p2 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Cover")
+p3 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Frequency")
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
@@ -1581,8 +1643,8 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ```r
 # By default, `vip()` plots the top 10 features
-vip(ames_xgb, pred.var = colnames(X), type = "Gain", 
-    top_n = nrow(X), bar = FALSE)
+vip(ames_xgb, feature_names = colnames(X), type = "Gain", 
+    num_features = nrow(X), bar = FALSE)
 ```
 
 &lt;img src="figures/xgboost-vip-2-1.svg" width="50%" style="display: block; margin: auto;" /&gt;

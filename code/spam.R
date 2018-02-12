@@ -107,59 +107,38 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 # Gradient boosting machines ---------------------------------------------------
 
-trn_label <- ifelse(trn$type == "spam", 1, 0)
-tst_label <- ifelse(tst$type == "spam", 1, 0)
-dtrn <- xgb.DMatrix(data.matrix(xtrn), label = trn_label)
-dtst <- xgb.DMatrix(data.matrix(xtst), label = tst_label)
-set.seed(1952)
-spam_xgb <- xgb.train(
-  params = list(max_depth = 6, eta = 0.01), 
-  data = dtrn, 
-  nrounds = 10000, 
-  watchlist = list(eval = dtst),
-  objective = "binary:logistic", 
-  eval_metric = "error", 
-  early_stopping_round = NULL#100
-)
-pred <- predict(spam_xgb, newdata = dtst)
-pred <- ifelse(pred >= 0.5, "spam", "nonspam")
-(spam_xgb_acc <- accuracy(pred = pred, obs = tst$type))
-plot(spam_xgb$evaluation_log, type = "l")
+library(h2o)
 
-# Plot test error
-par(mar = c(4, 4, 0.1, 0.1))
-plot(seq_len(spam_rf$ntree), spam_rf$test$err.rate[, "Test"], type = "l", 
-     col = dark2[4L], ylim = c(0.04, 0.11), 
-     ylab = "Test error", xlab = "Number of trees")
-lines(seq_len(spam_rf$ntree), spam_bag$test$err.rate[, "Test"], col = dark2[1L])
-lines(spam_xgb$evaluation_log, col = dark2[5L])
-abline(h = 1 - spam_tree_acc, lty = 2, col = "black")
-abline(h = 1 - spam_bag_acc, lty = 2, col = dark2[1L])
-abline(h = 1 - spam_rf_acc, lty = 2, col = dark2[4L])
-abline(h = 1 - spam_xgb_acc, lty = 2, col = dark2[5L])
-legend("topright", c("Single tree", "Bagging", "Random forest", "XGBoost"),
-       col = c("black", dark2[c(1, 4, 5)]), lty = c(2, 1, 1, 1), lwd = 1)
+# Initialize and connect to H2O
+h2o.init(nthreads = -1)
 
-# Fit a random forest
-set.seed(1928)  # for reproducibility
-spam_gbm <- gbm(
-  ifelse(type == "spam", 1, 0) ~ ., 
-  data = trn, 
-  distribution = "bernoulli",
-  n.trees = 10000,
-  interaction.depth = 5,
-  shrinkage = 0.01,
-  bag.fraction = 0.7,
-  train.fraction = 0.7,
-  # cv.folds = 5,
-  verbose = TRUE
+# Variable names
+x <- names(subset(spam, select = -type))
+y <- "type"
+
+# Convert training data to an H2OFrame
+h2o_trn <- as.h2o(trn)
+h2o_tst <- as.h2o(tst)
+
+# Fit a GBM
+spam_gbm <- h2o.gbm(
+  x = x,
+  y = y,
+  training_frame = h2o_trn,
+  model_id = "spam_gbm",
+  nfolds = 10,
+  fold_assignment = "Modulo",
+  keep_cross_validation_predictions = TRUE,
+  ntrees = 10000,
+  max_depth = 5,
+  learn_rate = 0.001,
+  stopping_rounds = 20,
+  stopping_metric = "misclassification",
+  stopping_tolerance = 0.001,
+  seed = 1438
 )
 
-# Optimal number of iterations
-best_iter <- gbm.perf(spam_gbm, method = "test")
+h2o.performance(spam_gbm, xval = TRUE)
 
-# Compute test error
-pred <- predict(spam_gbm, newdata = xtst, type = "response", 
-                n.trees = best_iter)
-pred <- ifelse(pred >= 0.5, "spam", "nonspam")
-(spam_gbm_acc <- accuracy(pred = pred, obs = tst$type))
+pred <- as.data.frame(predict(spam_gbm, newdata = h2o_tst))$predict
+accuracy(pred = pred, obs = tst$type)
