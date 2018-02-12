@@ -20,9 +20,9 @@ class: center, middle, inverse, title-slide
 ---
 
 
-# R package prerequisites
+## R package prerequisites
 
-.scrollable-code[
+.scrollable[
 
 
 ```r
@@ -52,7 +52,7 @@ devtools::install_github("AFIT-R/vip")  # for variable importance plots
 
 ---
 
-# Data set information
+## Data set information
 
 .scrollable[
 
@@ -94,7 +94,7 @@ from 2006 to 2010
 
 ---
 
-# A good modelling tool
+## A good modelling tool
 
 .pull-left[
 
@@ -144,7 +144,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Mushroom classification
+## Mushroom classification
 
 There is no simple rule for determining the edibility of a [mushroom](https://raw.githubusercontent.com/bgreenwell/MLDay18/master/data/mushroom.csv); no rules like **"leaflets three, let it be"**, **"hairy vine, no friend of mine"** and **"berries white, run in fright"** for poison ivy.
 
@@ -163,7 +163,7 @@ mushroom &lt;- read.csv(path)  # load the data from GitHub
 
 ---
 
-# Mushroom classification
+## Mushroom classification
 
 
 ```r
@@ -188,7 +188,7 @@ accuracy &lt;- function(pred, obs) {
 
 ---
 
-# Mushroom classification
+## Mushroom classification
 
 .pull-left[
 
@@ -253,7 +253,7 @@ accuracy(
 
 ---
 
-# Mushroom classification
+## Mushroom classification
 
 .pull-left[
 
@@ -272,7 +272,7 @@ Optimal tree (test error = 0%):
 
 ---
 
-# Mushroom classification
+## Mushroom classification
 
 .pull-left[
 
@@ -315,7 +315,7 @@ Optimal tree (test error = 0%):
 
 ---
 
-# A handy rule for mushrooms
+## A handy rule for mushrooms
 
 --
 
@@ -329,7 +329,7 @@ Optimal tree (test error = 0%):
 
 ---
 
-# Predicting email spam
+## Predicting email spam
 
 .pull-left[
 
@@ -352,7 +352,7 @@ Optimal tree (test error = 0%):
 
 ---
 
-# Predicting email spam (single tree)
+## Predicting email spam
 
 
 ```r
@@ -383,14 +383,18 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 ---
 
-# Predicting email spam (single tree)
+## Predicting email spam
+
+.scrollable[
 
 &lt;img src="figures/spam-tree-diagram-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+]
 
 
 ---
 
-# Predicting email spam (single tree)
+## Predicting email spam
 
 .pull-left[
 
@@ -434,7 +438,7 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 ---
 
-# How do trees measure up?
+## How do trees measure up?
 
 .pull-left[
 
@@ -442,7 +446,7 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 * &lt;span style="color:MediumSeaGreen"&gt;Small trees are easy to interpret&lt;/span&gt;
 
-* &lt;span style="color:MediumSeaGreen"&gt;Trees scale well to large `\(N\)`&lt;/span&gt; (Fast!!)
+* &lt;span style="color:MediumSeaGreen"&gt;Trees scale well to large `\(N\)`&lt;/span&gt; (fast!!)
 
 * &lt;span style="color:MediumSeaGreen"&gt;Can handle data of all types&lt;/span&gt; (i.e., requires little, if any, coding)
 
@@ -475,7 +479,7 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 ---
 
-# How do trees measure up?
+## How do trees measure up?
 
 &lt;img src="figures/esl-tbl.png" width="65%" style="display: block; margin: auto;" /&gt;
 &lt;br&gt;
@@ -490,7 +494,7 @@ pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 * Two popular algorithms (can be applied to any model, **not just trees!**):
 
-    - Bagging (reduce variance by averging)
+    - Bagging (reduce variance by averaging)
 
     - Boosting (reduce bias by building models sequentially)
     
@@ -517,7 +521,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Background
+## Background
 
 .pull-left[
 
@@ -548,35 +552,35 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Bagging trees
+## Bagging trees
 
 &lt;img src="figures/bagging-1-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# Trees are step functions
+## Trees are step functions
 
 &lt;img src="figures/bagging-2-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# Trees are noisy
+## Trees are noisy
 
 &lt;img src="figures/bagging-3-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# Bagging reduces variance (of noisy models)
+## Bagging reduces variance
 
 &lt;img src="figures/bagging-4-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# Predicting email spam (bagging)
+## Predicting email spam
 
 .pull-left[
 
@@ -621,7 +625,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Background
+## Background
 
 * Correlation limits the effect of bagging
 
@@ -632,7 +636,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Background
+## Background
 
 * **Bagging on steroids!!**
 
@@ -651,7 +655,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Random forest packages in R
+## Random forest packages in R
 
 .scrollable[
 
@@ -671,11 +675,13 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
     - MPI/OpenMP support
 
-* [`ranger`](https://github.com/imbs-hl/ranger)
+* [`ranger`](https://github.com/imbs-hl/ranger): **ran**dom forest **ge**ne**r**ator
 
     - Classification, regression, and survival analysis
     
     - [Fast!](https://www.jstatsoft.org/article/view/v077i01)
+    
+    - Accepts sparse numeric matrices (i.e., `dgcMatrix` objects from the [`Matrix`](https://cran.r-project.org/package=Matrix) package)
     
     - Estimated time to completion!! 🤑
 
@@ -705,7 +711,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 * [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-r)
 
-  - Distributd random forests via cloud computing
+  - Distributed random forests via cloud computing
   
   - Can be stacked with other `h2o` models!!
 
@@ -715,7 +721,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Predicting email spam (random forest)
+## Predicting email spam
 
 .pull-left[
 
@@ -748,7 +754,7 @@ spam_rf &lt;- randomForest(
 
 ---
 
-# Random forest
+## Random forest
 
 .pull-left[
 
@@ -789,16 +795,16 @@ spam_rf &lt;- randomForest(
 
 ---
 
-# Out-of-bag data
+## Out-of-bag data
 
 * For large enough `\(N\)`, on average, `\(1 - e^{-1} \approx 63.21\)`% or the original records end up in any bootstrap sample
 
 
 ```r
 N &lt;- 100000
-set.seed(1537)
+set.seed(1537)  # for reproducibility
 x &lt;- rnorm(N)
-mean(x %in% sample(x, replace = TRUE))
+mean(x %in% sample(x, replace = TRUE))  # non-OOB proportion
 ```
 
 ```
@@ -807,23 +813,23 @@ mean(x %in% sample(x, replace = TRUE))
 
 * Thus, roughly `\(e^{-1} \approx 36.79\)`% of the original observations are not used in the construction of a particular tree
 
-* These observations are considered *out-of-bag* (OOB) and can be usd to
+* These observations are considered *out-of-bag* (OOB) and can be used to
 
     - Provide an unbiased assessment of model performance (**sort of an unstructured, but free, cross-validation**)
  
-    - Construct novel variable importances measure based on the **predictive strength** of each predictor!!
+    - Construct novel variable importance measure based on the **predictive strength** of each predictor!!
 
 
 ---
 
-# Predicting email spam
+## Predicting email spam
 
 &lt;img src="figures/unnamed-chunk-6-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-# OOB-based variable importance
+## OOB-based variable importance
 
 * **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all the trees in the ensemble (this is what is done for GBMs)
 
@@ -842,7 +848,7 @@ mean(x %in% sample(x, replace = TRUE))
 
 ---
 
-# Boston housing example
+## Boston housing example
 
 * Housing data from `\(N = 506\)` census tracts in the city of Boston for the year 1970
 
@@ -890,7 +896,7 @@ system.time(
 
 ```
 ##    user  system elapsed 
-##   6.996   0.070   7.064
+##   6.560   0.044   6.609
 ```
 
 ```
@@ -917,7 +923,7 @@ system.time(
 
 ```
 ##    user  system elapsed 
-##   5.433   0.039   0.788
+##   5.932   0.032   0.881
 ```
 
 ```
@@ -931,7 +937,7 @@ system.time(
 
 ---
 
-# Variable importance plots: `vip`
+## Variable importance plots
 
 .pull-left[
 
@@ -989,9 +995,11 @@ p3 &lt;- vip(boston_ranger) + ggtitle("ranger")
 
 ---
 
-# Partial dependence plots
+## Partial dependence plots
 
-* Constructing a PDP in practice is rather straightforward!! 😎
+.scrollable[
+
+* Partial dependence plots (PDPs) help visualize the relationship between a subset of the features (typically 1-3) and the response
 
 * Let `\(x_1\)` be the predictor variable of interest with unique values `\(\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}\)`
 
@@ -1007,10 +1015,12 @@ p3 &lt;- vip(boston_ranger) + ggtitle("ranger")
 
     2. Plot the pairs `\(\left\{x_{1i}, \bar{f}_1\left(x_{1i}\right)\right\}\)` for `\(i = 1, 2, \dotsc, k\)`
 
+]
+
 
 ---
 
-# Partial dependence plots: `pdp`
+## Partial dependence plots
 
 .pull-left[
 
@@ -1044,7 +1054,7 @@ devtools::install_github("bgreenwell/pdp")
 
 ---
 
-# Partial dependence plots: `pdp`
+## Partial dependence plots
 
 
 ```r
@@ -1064,7 +1074,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-# Partial dependence plots: `pdp`
+## Partial dependence plots
 
 
 ```r
@@ -1094,7 +1104,7 @@ p3 &lt;- boston_ranger %&gt;%  # %&gt;% is automatically imported!
 
 ---
 
-# Partial dependence plots: `pdp`
+## Partial dependence plots
 
 
 ```r
@@ -1107,7 +1117,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-# Proximity matrix
+## Proximity matrix
 
 * In random forests (and bagging), **trees are intentionally grown deep**!
 
@@ -1119,7 +1129,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-# Proximity matrix
+## Proximity matrix
 
 * In random forests (and bagging), **trees are intentionally grown deep**!
 
@@ -1140,7 +1150,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-# Swiss banknote data
+## Swiss banknote data
 
 
 ```r
@@ -1168,7 +1178,7 @@ banknote_rf$confusion
 
 ---
 
-# Proximity matrix
+## Proximity matrix
 
 
 ```r
@@ -1181,7 +1191,9 @@ heatmap(1 - banknote_rf$proximity, col = viridis::plasma(256))
 
 ---
 
-# Outlier scores
+## Outlier scores
+
+Outlyingness of case `\(n\)` in class `\(j\)` to all other cases in class `\(j\)`: `$$out\left(n\right) = N / \sum_{cl\left(k\right) = j} prox_{ik} ^ 2$$`
 
 .pull-left[
 
@@ -1195,8 +1207,8 @@ outlyingness &lt;- tibble::tibble(
 )
 ggplot(outlyingness, aes(x = obs, y = out)) +
   geom_point(aes(color = class, size = out), alpha = 0.5) +
-  geom_hline(yintercept = 10, linetype = 2) +
-  labs(x = "Observtion", y = "Outlyingness") +
+* geom_hline(yintercept = 10, linetype = 2) +
+  labs(x = "Observation", y = "Outlyingness") +
   theme_light() +
   theme(legend.position = "none")
 ```
@@ -1205,14 +1217,14 @@ ggplot(outlyingness, aes(x = obs, y = out)) +
 
 .pull-right[
 
-&lt;img src="figures/outlier-plot-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/outlier-plot-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
 
 ]
 
 
 ---
 
-# Multi-dimensional scaling
+## Multi-dimensional scaling
 
 
 ```r
@@ -1225,7 +1237,7 @@ MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 2, cex = 1.5)
 
 ---
 
-# Missing value imputation
+## Missing value imputation
 
 * Random forest offers a novel approach to imputing missing values (i.e., `NA`s)
 
@@ -1262,26 +1274,26 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Background
+## Background
 
 * Boosting is a general technique to create an ensemble of models (*meta-algorithm*)
 
 * In contrast to bagging, boosting:
 
-    - uses a *weak learner* for each model
+    - Uses a *weak learner* for base learners
     
-    - builds the models sequentially (fix past mistakes)
+    - Builds the models sequentially (fix past mistakes)
     
 * Most commonly used with decision trees (e.g., *decision stumps*), but other types of models can be boosted
 
-* Boosting requires more tuning, but is typically faster and more accurate than RFs!
+* **Boosting requires more tuning**, but is typically faster and more accurate than RFs!
 
 * Many variants: AdaBoost, gradient boosting, and stochastic gradient boosting (GBM), for example
 
 
 ---
 
-# Stochastic gradient boosting
+## Stochastic gradient boosting
 
 * Stochastic gradient boosted decision trees is the most general and widely used flavor of boosting
 
@@ -1300,7 +1312,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# Common tuning parameters
+## Common tuning parameters
 
 * Size of trees (controls interaction depth)
 
@@ -1317,9 +1329,9 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ---
 
-# GBMs with squared-error loss
+## GBMs with squared-error loss
 
-1. Given a training sample `\(\boldsymbol{d} = \left(\boldsymbol{X}, \boldsymbol{y}\right)\)`. Fix the number of steps `\(B\)`, the shrinkage factor `\(\epsilon\)`, and the tree depth `\(d\)`. Set the initial fit `\(\widehat{G}_0 \equiv 0\)`, and the redisual vector `\(\boldsymbol{r} = \boldsymbol{y}\)`.
+1. Given a training sample `\(\boldsymbol{d} = \left(\boldsymbol{X}, \boldsymbol{y}\right)\)`. Fix the number of steps `\(B\)`, the shrinkage factor `\(\epsilon\)`, and the tree depth `\(d\)`. Set the initial fit `\(\widehat{G}_0 \equiv 0\)`, and the residual vector `\(\boldsymbol{r} = \boldsymbol{y}\)`.
 
 2. For `\(b = 1, 2, \dots, B\)` repeat:
 
@@ -1331,7 +1343,9 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
 3. Return the sequence of fitted functions `\(\widehat{G}_b\)`, `\(b = 1, 2, \dots, B\)`.
 
-* [R code for gradient boosted regression trees with squared-error loss](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
+* Here, `\(B\)`, `\(\epsilon\)`, and `\(d\)` are tuning parameters
+
+* [R code](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
 ???
 
@@ -1341,39 +1355,72 @@ Source: [Computer Age Statistical Inference, pg. 333](https://web.stanford.edu/~
 ---
 class: center, middle
 
-# Boosting regression stumps [R code](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
+## [Boosting regression stumps](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
 ![](gifs/boosted_stumps.gif)
 
 
 ---
 
-# GBM packages in R
+## GBM packages in R
 
-* [`gbm`](https://github.com/gbm-developers/gbm): **g**eneralized **b**oosted **m**odels (on CRAN)
+.scrollable[
+
+* [`gbm`](https://github.com/gbm-developers/gbm): **g**eneralized **b**oosted **m**odels
 
     - The original R implementation of GMBs (by Greg Ridgeway)
     
     - Slower than modem implementations (but still pretty fast)
     
+    - Provides OOB error estimate
+    
+    - Supports the *weighted tree traversal* method for fast construction of PDPs
+    
     - Currently orphaned on CRAN (for now)
     
-* [`gbm3`](https://github.com/gbm-developers/gbm3): **g**eneralized **b**oosted **m**odels (not currently listed on CRAN)
+* [`gbm3`](https://github.com/gbm-developers/gbm3): **g**eneralized **b**oosted **m**odels
 
     - Shiny new version of `gbm` that is not backwards compatible
     
     - Faster and supports parallel tree building
     
-* [`xgboost`](https://github.com/dmlc/xgboost): R interface to XGBoost for &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
+    - Not currently listed on CRAN
+    
+* [`xgboost`](https://github.com/dmlc/xgboost): &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
 
-* [`lightgbm`](https://github.com/Microsoft/LightGBM): Microsoft supported, and somewhat [faster](https://github.com/Microsoft/LightGBM/blob/master/docs/Experiments.rst#comparison-experiment), alternative to `xgboost` (uses *leaf-wise* tree growth)
+    - Widely used by data scientists to achieve **state-of-the-art** results across many machine learning challenges (e.g., Kaggle)
+
+    - Designed to be highly efficient, flexible, and portable
+    
+    - Supports user-defined loss functions
+    
+    - Supports early stopping
+    
+    - Includes fast histogram method for numeric features
+    
+    - Parallel tree boosting and GPU support!!
+
+&lt;img src="figures/gpu.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+* [`lightgbm`](https://github.com/Microsoft/LightGBM):  
+
+    - Microsoft supported, and somewhat [faster](https://github.com/Microsoft/LightGBM/blob/master/docs/Experiments.rst#comparison-experiment), alternative to `xgboost`
+
+    - Uses *leaf-wise* (i.e., best-first) tree growth
+    
+    - Not currently listed on CRAN
 
 * [`mboost`](https://github.com/boost-R): **m**odel-based **boost**ing
+
+    - Implements tools for fitting and evaluating a variety of regression and classification models (somewhere between GLMs/GAMs and GBMs)
+
+]
 
 
 ---
 
-# Missing values
+## Missing values
 
 * Unlike RFs, GBMs typically support missing values!
 
@@ -1386,7 +1433,7 @@ class: center, middle
 
 ---
 
-# Boston housing example
+## Boston housing example
 
 
 ```r
@@ -1411,15 +1458,15 @@ boston_gbm &lt;- gbm(
 ```
 
 ```
-## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'prerequisites'&gt;
-## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'prerequisites'&gt;
-## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'prerequisites'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
 ```
 
 
 ---
 
-# Boston housing example
+## Boston housing example
 
 
 ```r
@@ -1433,7 +1480,7 @@ best_iter &lt;- gbm.perf(
 
 ---
 
-# GBMs and PDPs
+## GBMs and PDPs
 
 * PDPs can be slow to construct using the brute force method (**it involves making multiple copies of the training data!!**)
     
@@ -1470,14 +1517,14 @@ system.time(
 
 ```
 ##    user  system elapsed 
-##  106.64    0.00  106.74
+## 106.060   0.032 106.084
 ```
 
 ]
 
 .pull-right[
 
-### Weighted tree traversal method:
+### Recursive method:
 
 ```r
 system.time(
@@ -1493,7 +1540,7 @@ system.time(
 
 ```
 ##    user  system elapsed 
-##   0.544   0.000   0.544
+##   0.424   0.028   0.452
 ```
 
 ]
@@ -1512,7 +1559,7 @@ grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 .pull-left[
 
@@ -1547,20 +1594,9 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 ---
 
-# &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
+## Ames housing data
 
-* Widely used by data scientists to achieve **state-of-the-art** results across many machine learning challenges (e.g., **Kaggle**)
-
-* Designed to be highly **efficient**, **flexible**, and **portable**
-
-* Parallel tree boosting and **GPU support with fast histogram method!!**
-
-&lt;img src="figures/gpu.jpg" width="50%" style="display: block; margin: auto;" /&gt;
-
-* **Supports early stopping!!**
-
-
----
+.scrollable[
 
 
 ```r
@@ -1591,10 +1627,11 @@ ames_xgb &lt;- xgboost(
 )
 ```
 
+]
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 
 ```r
@@ -1622,7 +1659,7 @@ vi(ames_xgb, feature_names = colnames(X), type = "Gain")
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 
 ```r
@@ -1638,7 +1675,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 
 ```r
@@ -1652,7 +1689,7 @@ vip(ames_xgb, feature_names = colnames(X), type = "Gain",
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 
 ```r
@@ -1670,7 +1707,7 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 ---
 
-# Ames housing data
+## Ames housing data
 
 
 &lt;img src="figures/xgboost-pdp-vi-1.svg" style="display: block; margin: auto;" /&gt;
@@ -1678,15 +1715,21 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 ---
 
+## Summary
+
+.scrollable[
+
 .center[ 
-**Summary:** `\(Error \approx Bias + Variance\left(\rho\right)\)` 
+
+`\(Error \approx Bias + Variance\left(\rho\right)\)` 
+
 ]
 
 .pull-left[
 
 #### &lt;span style="color:MediumSeaGreen"&gt;Random forests:&lt;/span&gt;
 
-* Builds an ensemble of fully grown deicison trees (**low bias, high variance**)
+* Builds an ensemble of fully grown decision trees (**low bias, high variance**)
 
     - Correlation between trees is reduced through subsampling the columns
 
@@ -1696,7 +1739,7 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 * Lots of cool bells and whistles
 
-* Trees are independently grown (embarassingly parallel)
+* Trees are independently grown (embarrassingly parallel)
 
 ]
 
@@ -1716,10 +1759,12 @@ grid.arrange(p4, p5, p6, ncol = 3)
 
 ]
 
+]
+
 
 ---
 
-# Questions?
+## Questions?
 
 &lt;img src="figures/questions.png" width="100%" style="display: block; margin: auto;" /&gt;
     </textarea>

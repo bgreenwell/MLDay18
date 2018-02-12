@@ -23,12 +23,14 @@ rpartBoost <- function(X, y, data, num_trees = 100, learn_rate = 0.1,
 }
 
 # Function to plot the predictions from a particular boosting iteration
-plotIter <- function(object, iter, ...) {
+plotIter <- function(object, iter, show_legend = FALSE, ...) {
   plot(x, y)
   lines(x, sin(x), lwd = 3, col = cols[2L])
   lines(x, object[, iter + 1], lwd = 3, col = cols[1L], ...)
-  # legend("topright", legend = c("Boosted prediction", "True function"),
-  #        lty = 1L, lwd = 3L, col = cols[1L:2L], inset = 0.01)
+  if (show_legend) {
+    legend("topright", legend = c("Boosted prediction", "True function"),
+           lty = 1L, lwd = 3L, col = cols[1L:2L], inset = 0.01)
+  }
 }
 
 # Simulate some sine wave data
@@ -50,7 +52,7 @@ for (i in 0:15) {
 # # Make a gif (requires that ImageMagick beinstalled on machine)
 # png(file = "gifs/boosted-stumps%02d.png", width = 500, height = 500)
 # for (i in c(0:100)){
-#   plotIter(bst, iter = i)
+#   plotIter(bst, iter = i, show_legend = TRUE)
 # }
 # dev.off()
 # system("convert -delay 30 gifs/*.png gifs/boosted_stumps.gif")

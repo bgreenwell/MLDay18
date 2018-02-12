@@ -226,7 +226,7 @@
   <path d="M 270.828125 95 L 418 95 L 418 96 L 270.828125 96 Z M 270.828125 95 "/>
 </clipPath>
 </defs>
-<g id="surface712">
+<g id="surface264">
 <rect x="0" y="0" width="432" height="288" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
 <g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
   <use xlink:href="#glyph0-1" x="14.398438" y="225.674805"/>
@@ -592,14 +592,14 @@
 </g>
 <g style="fill:rgb(0%,0%,0%);fill-opacity:1;">
   <use xlink:href="#glyph1-1" x="185.5" y="25.452148"/>
-  <use xlink:href="#glyph1-2" x="193.505859" y="25.452148"/>
-  <use xlink:href="#glyph1-3" x="201.511719" y="25.452148"/>
-  <use xlink:href="#glyph1-4" x="208.639648" y="25.452148"/>
-  <use xlink:href="#glyph1-2" x="212.498047" y="25.452148"/>
-  <use xlink:href="#glyph1-5" x="220.503906" y="25.452148"/>
-  <use xlink:href="#glyph1-6" x="228.509766" y="25.452148"/>
-  <use xlink:href="#glyph1-7" x="236.515625" y="25.452148"/>
-  <use xlink:href="#glyph1-8" x="241.670898" y="25.452148"/>
+  <use xlink:href="#glyph1-2" x="193.509766" y="25.452148"/>
+  <use xlink:href="#glyph1-3" x="201.519531" y="25.452148"/>
+  <use xlink:href="#glyph1-4" x="208.650391" y="25.452148"/>
+  <use xlink:href="#glyph1-2" x="212.510742" y="25.452148"/>
+  <use xlink:href="#glyph1-5" x="220.520508" y="25.452148"/>
+  <use xlink:href="#glyph1-6" x="228.530273" y="25.452148"/>
+  <use xlink:href="#glyph1-7" x="236.540039" y="25.452148"/>
+  <use xlink:href="#glyph1-8" x="241.697266" y="25.452148"/>
 </g>
 </g>
 </svg>
