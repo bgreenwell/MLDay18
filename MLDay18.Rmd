@@ -493,17 +493,21 @@ knitr::include_graphics("figures/esl-tbl.png")
 
 ## Creating ensembles of trees
 
-* Main idea: breaking the *bias-variance trade-off*
+* The key to accuracy is **low bias** and **low variance**
+
+* **Main idea:** breaking the [*bias-variance trade-off*](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
+
+    - $Error \approx Bias + Variance$
 
 * Two popular algorithms (can be applied to any model, **not just trees!**):
 
-    - Bagging (reduce variance by averaging)
+    - Bagging (<span style="color:Magenta">reduce variance by averaging</span>)
 
-    - Boosting (reduce bias by building models sequentially)
+    - Boosting (<span style="color:Magenta">reduce bias by building models sequentially</span>)
     
 * Random forest is just a slight modification over bagging applied to decision trees!
 
-<br><br>
+<br>
 
 <center>
 <font size="8"><span style="color:DarkBlue">Boosting</span> >= <span style="color:MediumSeaGreen">Random forest</span> > <span style="color:MediumOrchid ">Bagging</span> > <span style="color:DarkOrange">Single tree</span></font>
@@ -528,13 +532,13 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 .pull-left[
 
-* The key to accuracy is **low bias**, **low variance**, AND **low correlation**!
-
 * **B**ootstrap **agg**regat**ing**
 
-    1. Sample records **with replacement**
+* Bagging trees:
+
+    1. Sample records **with replacement** (i.e., bootstrap the training data)
     
-    2. Fit model to resampled data set
+    2. Fit an **overgrown tree** to the resampled data set
     
     3. Repeat a large number of times ( $\ge 500$ , say)
 
@@ -696,32 +700,23 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ## Background
 
-* Correlation limits the effect of bagging
-
---
-
-```{r correlation, echo=FALSE, out.width="60%"}
-knitr::include_graphics("figures/correlation.png")
-```
-
-
----
-
-## Background
-
 * **Bagging on steroids!!**
+
+* Correlation limits the effect of bagging!
 
 * Grow trees just as in bagging, but with a small twist
 
-    - At each split in each tree in the forest, select a subset of the predictors as candidate splitters
+    - Before each split in each tree in the forest, select a subset of the predictors **at random** as candidate splitters
     
-      - This essentially **"decorrelates" the trees!**
+      - This essentially **"decorrelates"** the trees in the ensemble!
     
-    - The number of randomly selected variables, denoted $m_{try}$, is a **tuning parameter** (really the only tuning parameter in a random forest)
+    - The number of randomly selected variables, denoted $m_{try}$, is a **tuning parameter** (arguably the only tuning parameter in a random forest)
 
-* Bagging introduces randomness into the rows of the data
+* Bagging introduces <span style="color:CornFlowerBlue">randomness into the rows</span> of the data
 
-* Random forests introduce randomness into the rows and columns of the data
+* Random forest introduces <span style="color:CornFlowerBlue">randomness into the rows and columns</span> of the data
+
+* [*Extremely randomized trees*](https://link.springer.com/article/10.1007/s10994-006-6226-1) take this randomness one step further to reduce variance!
 
 
 ---
@@ -784,7 +779,7 @@ knitr::include_graphics("figures/correlation.png")
 
   - Distributed random forests via cloud computing
   
-  - Can be stacked with other `h2o` models!!
+  - Can be stacked with other [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-r) models, like GBMs and DNNs!!
 
 ]
 
@@ -848,13 +843,15 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 * Competitive accuracy
 
-* Free cross-validation
+* Supervised and unsupervised learning
 
-* Variable importance
+* *Out-of-bag* data `r emo::ji("sunglasses")`
 
-* Supervised and unsupervised
+    - Free cross-validation
 
-* Deep trees (**Proximity matrix!!**)
+    - Novel variable importance
+
+* Novel <span style="color:Purple">proximity matrix</span> `r emo::ji("sunglasses")`
 
     - Outlier/novelty detection
     
@@ -907,7 +904,7 @@ mean(x %in% sample(x, replace = TRUE))  # non-OOB proportion
 
 ## Predicting email spam
 
-```{r, echo=FALSE, out.width="50%"}
+```{r, echo=FALSE, out.width="60%"}
 # Compute test error
 pred <- predict(spam_rf, newdata = xtst, type = "class")
 spam_rf_acc <- accuracy(pred = pred, obs = tst$type)
@@ -921,7 +918,7 @@ lines(seq_len(spam_rf$ntree), spam_rf$err.rate[, "OOB"], type = "l",
      col = dark2[1L])
 abline(h = spam_rf$err.rate[spam_rf$ntree, "OOB"], lty = 2, col = dark2[1L])
 abline(h = 1 - spam_rf_acc, lty = 2, col = dark2[4L])
-legend("topright", c("Bagging (OOB)", "Random forest (test)"),
+legend("topright", c("Random forest (OOB)", "Random forest (test)"),
        col = c(dark2[c(1, 4)]), lty = c(1, 1))
 ```
 
@@ -1087,7 +1084,7 @@ grid.arrange(p1, p2, p3, ncol = 3)  #<<
 
 .scrollable[
 
-* Partial dependence plots (PDPs) help visualize the relationship between a subset of the features (typically 1-3) and the response
+* [Partial dependence plots (PDPs)](https://journal.r-project.org/archive/2017/RJ-2017-016/index.html) help visualize the relationship between a subset of the features (typically 1-3) and the response
 
 * Let $x_1$ be the predictor variable of interest with unique values $\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}$
 
@@ -1236,7 +1233,7 @@ prp(cart2,
 
 * **Requires the storage of an $N \times N$ matrix!!** `r emo::ji("scream")`
 
-* Only available in `randomForest` and `bigrf`
+* Only available in [`randomForest`](https://cran.r-project.org/package=randomForest), [`party`](https://cran.r-project.org/web/packages/party/index.html), and [`bigrf`](https://github.com/aloysius-lim/bigrf)
 
 
 ---
@@ -1347,7 +1344,7 @@ MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 2, cex = 1.5)
 
 * Resulting **OOB error estimate tends to be overly optimistic** 
 
-* Only available in `randomForest`
+* Only available in [`randomForest`](https://cran.r-project.org/package=randomForest)
 
 
 ---
@@ -1366,55 +1363,31 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ## Background
 
-* Boosting is a general technique to create an ensemble of models (*meta-algorithm*)
+.scrollable[
+
+* Boosting is a general technique for creating an ensemble of models (*meta-algorithm*)
 
 * In contrast to bagging, boosting:
 
-    - Uses a *weak learner* for base learners
+    - Uses a *weak learner* for the base learners
     
     - Builds the models sequentially (fix past mistakes)
     
-* Most commonly used with decision trees (e.g., *decision stumps*), but other types of models can be boosted
+* Most commonly used with **shallow decision trees** (e.g., decision stumps), but other types of models can be boosted
 
 * **Boosting requires more tuning**, but is typically faster and more accurate than RFs!
 
-* Many variants: AdaBoost, gradient boosting, and stochastic gradient boosting (GBM), for example
+* **Many flavors of boosting:** AdaBoost, Real AdaBoost, gradient boosting, and stochastic gradient boosting (GBM), for example
 
+* GBMs are the most **general** and widely used flavor of boosting
 
----
+    - Introduces subsampling into the rows and columns (**stochastic**)
 
-## Stochastic gradient boosting
+    - Loss function is optimized using *gradient descent* (**gradient**)
 
-* Stochastic gradient boosted decision trees is the most general and widely used flavor of boosting
+    - With the right combination of parameters, GBMs can emulate RFs!
 
-* Allows for arbitrary differentiable loss functions (**generalized**)
-
-* Introduces subsampling into the rows and columns (**stochastic**)
-
-* Loss function is optimized using *gradient descent* (**gradient**)
-
-* With the right combination of parameters, GBMs can emulate RFs!
-
-* Popular R package for boosting: `gbm`, `gbm3`, `xgboost`, and `lightgbm`
-
-* Check out the [machine learning task view](https://cran.r-project.org/web/views/MachineLearning.html)!
-
-
----
-
-## Common tuning parameters
-
-* Size of trees (controls interaction depth)
-
-* Learning rate (shrinkage for regularization)
-
-* Number of trees in the sequence
-
-* Minimum leaf size
-
-* Subsampling fraction
-
-* **And many more depending on the implementation!** (ya, I'm talking about you, `xgboost` `r emo::ji("smug")`)
+]
 
 
 ---
@@ -1518,9 +1491,9 @@ knitr::include_graphics("figures/gpu.jpg")
 
 * In most GBM implementations, `NA`s are interpreted as containing information (i.e., missing for a reason), rather than missing at random
 
-    - In `gbm` and `gbm3`, a separate branch is created at each split for `NA`s (i.e., each decision node contains three splits: left, right, and missing)
+    - In [`gbm`](https://github.com/gbm-developers/gbm) and [`gbm3`](https://github.com/gbm-developers/gbm3), a separate branch is created at each split for `NA`s (i.e., each decision node contains three splits: left, right, and missing)
     
-    - In `h2o` and `xgboost` each split has a **default direction** that is learned during training (`NA`s take the default route!)
+    - In [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-r) and [`xgboost`](https://github.com/dmlc/xgboost) each split has a **default direction** that is learned during training (`NA`s take the default route!)
 
 
 ---
@@ -1544,7 +1517,7 @@ boston_gbm <- gbm(
   shrinkage = 0.005,          #<<
   bag.fraction = 1,           #<<
   train.fraction = 1,         #<<
-  cv.folds = 10  # often gives the best results
+  cv.folds = 10  # k-fold CV often gives the best results
 )
 ```
 
@@ -1560,26 +1533,10 @@ best_iter <- gbm.perf(
 )
 ```
 
----
-
-## GBMs and PDPs
-
-* PDPs can be slow to construct using the brute force method (**it involves making multiple copies of the training data!!**)
-    
-* The exception is decision trees based on single-variable splits which can make use of the efficient *weighted tree traversal method* described in Friedman (2001)
-
-    - However, only the `gbm` and `gbm3` packages utilize this approach 
-
-    - The `pdp` package:
-
-        - Also exploits this strategy when used with `gbm` models
-
-        - Has the option to construct PDPs in parallel using any parallel back end supported by the `foreach` package
-
-        - Allows for user specified grids (e.g., plotting over the deciles of a feature is much faster and often sufficient to reveal functional relationships!)
-
 
 ---
+
+## Partial dependence plots
 
 .pull-left[
 
@@ -1617,6 +1574,8 @@ system.time(
 
 
 ---
+
+## Partial dependence plots
 
 ```{r boston-pdps, fig.width=8, fig.height=4}
 # Display plots side-by-side
@@ -1674,13 +1633,13 @@ X <- data.matrix(subset(ames, select = -Sale_Price))
 
 # Fit an XGBoost model
 set.seed(203)  # for reproducibility
-ames_xgb <- xgboost(
+ames_xgb <- xgboost(  # tune using `xgb.cv()`
   data = X, 
   label = ames$Sale_Price, 
   objective = "reg:linear",
-  nrounds = 500, 
+  nrounds = 2771, 
   max_depth = 5, 
-  eta = 0.1, 
+  eta = 0.01, 
   subsample = 1,          #<<
   colsample = 1,          #<<
   num_parallel_tree = 1,  #<<
@@ -1691,15 +1650,6 @@ ames_xgb <- xgboost(
 ```
 
 ]
-
----
-
-## Ames housing data
-
-```{r xgboost-vi}
-# Variable importance scores
-vi(ames_xgb, feature_names = colnames(X), type = "Gain")
-```
 
 
 ---
@@ -1771,11 +1721,7 @@ ggplot(pds, aes(x = xval, y = yhat)) +
 
 .scrollable[
 
-.center[ 
-
-$Error \approx Bias + Variance\left(\rho\right)$ 
-
-]
+* Check out the [machine learning task view](https://cran.r-project.org/web/views/MachineLearning.html)!
 
 .pull-left[
 

@@ -10,19 +10,43 @@ ames <- AmesHousing::make_ames()
 # Feature matrix  # or xgb.DMatrix or sparse matrix
 X <- data.matrix(subset(ames, select = -Sale_Price))
 
+# Use k-fold cross-validation to find the "optimal" number of trees
+set.seed(1214)  # for reproducibility
+ames_xgb_cv <- xgb.cv(
+  data = X, 
+  label = ames$Sale_Price, 
+  objective = "reg:linear",
+  nrounds = 10000, 
+  max_depth = 5, 
+  eta = 0.01, 
+  subsample = 1,          
+  colsample = 1,          
+  num_parallel_tree = 1,  
+  eval_metric = "rmse",   
+  early_stopping_rounds = 50,
+  verbose = 0,
+  nfold = 5
+)
+
+# Plot cross-validation results
+plot(test_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, type = "l", 
+     ylim = c(0, 200000))
+lines(train_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, col = "red2")
+print(ames_xgb_cv$best_iteration)
+
 # Fit an XGBoost model
 set.seed(203)  # for reproducibility
 ames_xgb <- xgboost(
   data = X, 
   label = ames$Sale_Price, 
   objective = "reg:linear",
-  nrounds = 500, 
+  nrounds = ames_xgb_cv$best_iteration, 
   max_depth = 5, 
-  eta = 0.1, 
-  subsample = 1,          #<<
-  colsample = 1,          #<<
-  num_parallel_tree = 1,  #<<
-  eval_metric = "rmse",   #<<
+  eta = 0.01, 
+  subsample = 1,          
+  colsample = 1,          
+  num_parallel_tree = 1,  
+  eval_metric = "rmse",   
   verbose = 0
 )
 
