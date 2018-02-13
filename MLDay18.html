@@ -1567,18 +1567,18 @@ library(xgboost)
 # Construct data set
 ames &lt;- AmesHousing::make_ames()
 
-# Feature matrix  # or xgb.DMatrix or sparse matrix
+*# Feature matrix  # or xgb.DMatrix or sparse matrix
 X &lt;- data.matrix(subset(ames, select = -Sale_Price))
 
 # Fit an XGBoost model
 set.seed(203)  # for reproducibility
-ames_xgb &lt;- xgboost(  # tune using `xgb.cv()`
+ames_xgb &lt;- xgboost(         # tune using `xgb.cv()`
   data = X, 
   label = ames$Sale_Price, 
-  objective = "reg:linear",
-  nrounds = 2771, 
-  max_depth = 5, 
-  eta = 0.01, 
+* objective = "reg:linear",  # loss function
+* nrounds = 2771,            # number of trees
+* max_depth = 5,             # interaction depth
+* eta = 0.01,                # learning rate
 * subsample = 1,
 * colsample = 1,
 * num_parallel_tree = 1,
