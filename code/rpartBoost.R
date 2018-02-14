@@ -24,9 +24,9 @@ rpartBoost <- function(X, y, data, num_trees = 100, learn_rate = 0.1,
 
 # Function to plot the predictions from a particular boosting iteration
 plotIter <- function(object, iter, show_legend = FALSE, ...) {
-  plot(x, y)
+  plot(x, y, ...)
   lines(x, sin(x), lwd = 3, col = cols[2L])
-  lines(x, object[, iter + 1], lwd = 3, col = cols[1L], ...)
+  lines(x, object[, iter + 1], lwd = 3, col = cols[1L])
   if (show_legend) {
     legend("topright", legend = c("Boosted prediction", "True function"),
            lty = 1L, lwd = 3L, col = cols[1L:2L], inset = 0.01)
@@ -40,13 +40,13 @@ y <- sin(x) + rnorm(length(x), sd = 0.3)
 plot(x, y)
 
 # gradient boosted decision trees
-bst <- rpartBoost(X = x, y = y, num_trees = 1000, learn_rate = 0.01, 
-                  tree_depth = 1, verbose = TRUE)
+bst <- rpartBoost(X = x, y = y, num_trees = 1000, learn_rate = 0.1, 
+                  tree_depth = 3, verbose = TRUE)
 
 # Plot first 15 iterations
-par(mfrow = c(4, 4))
-for (i in 0:15) {
-  plotIter(bst, iter = i)
+par(mfrow = c(3, 3))
+for (i in c(0, 5, 10, 15, 25, 50, 100, 500, 1000)) {
+  plotIter(bst, iter = i, main = paste("Iter:", i))
 }
 
 # # Make a gif (requires that ImageMagick beinstalled on machine)
