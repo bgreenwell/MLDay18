@@ -35,7 +35,7 @@ lines(train_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, col = "red2")
 abline(v = ames_xgb_cv$best_iteration, lty = 2)
 legend("topright", legend = c("Train", "CV"), lty = 1, col = c("red2", 1),
        inset = 0.15)
-print(ames_xgb_cv$best_iteration)
+print(ames_xgb_cv$best_iteration)  # 2771
 
 # Fit an XGBoost model
 set.seed(203)  # for reproducibility
