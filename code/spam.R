@@ -107,38 +107,22 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 # Gradient boosting machines ---------------------------------------------------
 
-library(h2o)
-
-# Initialize and connect to H2O
-h2o.init(nthreads = -1)
-
-# Variable names
-x <- names(subset(spam, select = -type))
-y <- "type"
-
-# Convert training data to an H2OFrame
-h2o_trn <- as.h2o(trn)
-h2o_tst <- as.h2o(tst)
-
 # Fit a GBM
-spam_gbm <- h2o.gbm(
-  x = x,
-  y = y,
-  training_frame = h2o_trn,
-  model_id = "spam_gbm",
-  nfolds = 10,
-  fold_assignment = "Modulo",
-  keep_cross_validation_predictions = TRUE,
-  ntrees = 10000,
-  max_depth = 5,
-  learn_rate = 0.001,
-  stopping_rounds = 20,
-  stopping_metric = "misclassification",
-  stopping_tolerance = 0.001,
-  seed = 1438
+set.seed(1913)  # for reproducibility
+spam_gbm <- gbm(
+  ifelse(type == "spam", 1, 0) ~ ., 
+  data = trn, 
+  distribution = "bernoulli",
+  n.trees = 10000,
+  interaction.depth = 5,
+  shrinkage = 0.001,
+  bag.fraction = 1,
+  train.fraction = 0.7,
+  cv.folds = 0,
+  verbose = TRUE
 )
+best.iter <- gbm.perf(spam_gbm, method = "test")
 
-h2o.performance(spam_gbm, xval = TRUE)
-
-pred <- as.data.frame(predict(spam_gbm, newdata = h2o_tst))$predict
+pred <- predict(spam_gbm, newdata = xtst, n.trees = best_iter, type = "response")
+pred <- ifelse(pred >= 0.5, "spam", "nonspam")
 accuracy(pred = pred, obs = tst$type)

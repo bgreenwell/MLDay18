@@ -306,29 +306,6 @@ prp(cart2,
 
 ---
 
-## Mushroom classification
-
-.pull-left[
-
-```{r mushroom-vi}
-# Extract tibble of variable importance scores
-vip::vi(cart2, trun = 10L)[1L:10L, ]  #<<
-```
-
-]
-
-.pull-right[
-
-```{r mushroom-vip, out.width="100%"}
-# Construct ggplot2-based variable importance plot
-vip::vip(cart2, num_features = 10)  #<<
-```
-
-]
-
-
----
-
 ## A handy rule for mushrooms
 
 --
@@ -784,6 +761,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 ]
 
 ]
+
 
 ---
 
@@ -1621,6 +1599,8 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 .scrollable[
 
+.pull-left[
+
 ```{r ames-xgboost}
 # Load required packages
 library(xgboost)
@@ -1648,6 +1628,41 @@ ames_xgb <- xgboost(         # tune using `xgb.cv()`
   save_period = NULL         #<<
 )
 ```
+
+]
+
+.pull-right[
+
+```{r ames-xgboost-cv, echo=FALSE, out.width="100%"}
+# Use k-fold cross-validation to find the "optimal" number of trees
+set.seed(1214)  # for reproducibility
+ames_xgb_cv <- xgb.cv(
+  data = X, 
+  label = ames$Sale_Price, 
+  objective = "reg:linear",
+  nrounds = 10000, 
+  max_depth = 5, 
+  eta = 0.01, 
+  subsample = 1,          
+  colsample = 1,          
+  num_parallel_tree = 1,  
+  eval_metric = "rmse",   
+  early_stopping_rounds = 50,
+  verbose = 0,
+  nfold = 5
+)
+
+# Plot cross-validation results
+plot(test_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, type = "l", 
+     ylim = c(0, 200000), xlab = "Number of trees", ylab = "RMSE",
+     main = "Results from using xgb.cv()")
+lines(train_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, col = "red2")
+abline(v = ames_xgb_cv$best_iteration, lty = 2)
+legend("topright", legend = c("Train", "CV"), lty = 1, col = c("red2", 1),
+       inset = 0.15)
+```
+
+]
 
 ]
 

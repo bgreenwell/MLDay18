@@ -272,49 +272,6 @@ Optimal tree (test error = 0%):
 
 ---
 
-## Mushroom classification
-
-.pull-left[
-
-
-```r
-# Extract tibble of variable importance scores
-*vip::vi(cart2, trun = 10L)[1L:10L, ]
-```
-
-```
-## # A tibble: 10 x 2
-##    Variable   Importance
-##    &lt;chr&gt;           &lt;dbl&gt;
-##  1 odor          1915   
-##  2 spore.prin    1414   
-##  3 gill.color    1176   
-##  4 ring.type     1022   
-##  5 stalk.surf    1022   
-##  6 stalk.surf    1011   
-##  7 stalk.colo      31.6 
-##  8 stalk.root      13.8 
-##  9 habitat         11.0 
-## 10 stalk.colo       8.81
-```
-
-]
-
-.pull-right[
-
-
-```r
-# Construct ggplot2-based variable importance plot
-*vip::vip(cart2, num_features = 10)
-```
-
-&lt;img src="figures/mushroom-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
-
-]
-
-
----
-
 ## A handy rule for mushrooms
 
 --
@@ -715,6 +672,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 ]
 
 ]
+
 
 ---
 
@@ -1559,6 +1517,8 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 .scrollable[
 
+.pull-left[
+
 
 ```r
 # Load required packages
@@ -1587,6 +1547,14 @@ ames_xgb &lt;- xgboost(         # tune using `xgb.cv()`
 * save_period = NULL
 )
 ```
+
+]
+
+.pull-right[
+
+&lt;img src="figures/ames-xgboost-cv-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
 
 ]
 
