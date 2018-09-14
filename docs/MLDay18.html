@@ -1,27 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Random Forests and Gradient Boosting Machines in R</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Brandon M. Greenwell" />
+    <meta name="date" content="2018-02-14" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Random Forests and Gradient Boosting Machines in R
+## ↟↟↟↟↟<br/>↟↟↟↟<br/><br/>GitHub: <a href="https://github.com/bgreenwell/MLDay18" class="uri">https://github.com/bgreenwell/MLDay18</a>
+### Brandon M. Greenwell
+### 02/14/2018
+
 ---
-title: "Random Forests and Gradient Boosting Machines in R"
-subtitle: "\u219F\u219F\u219F\u219F\u219F<br/>\u219F\u219F\u219F\u219F<br/><br/>GitHub: https://github.com/bgreenwell/MLDay18"
-author: "Brandon M. Greenwell"
-date: "02/14/2018"
-output:
-  xaringan::moon_reader:
-    css: ["default", "scrollable.css"]
-    lib_dir: libs
-    chakra: libs/remark-latest.min.js
-    nature:
-      beforeInit: "macros.js"
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-      countdown: 60000
----
+
 
 ## R package prerequisites
 
 .scrollable[
 
-```{r r-prerequisites, eval=FALSE}
 
+```r
 # Install required packages from CRAN
 install.packages(
   "AmesHousing",   # for Ames housing data
@@ -58,15 +62,15 @@ devtools::install_github("AFIT-R/vip")  # for variable importance plots
 
 * [mushroom](https://archive.ics.uci.edu/ml/datasets/mushroom)
 
-    - 21 physical characteristics on 8124 mushrooms classified as either <span style="color:Tomato">poisonous</span> or <span style="color:MediumSeaGreen">edible</span>
+    - 21 physical characteristics on 8124 mushrooms classified as either &lt;span style="color:Tomato"&gt;poisonous&lt;/span&gt; or &lt;span style="color:MediumSeaGreen"&gt;edible&lt;/span&gt;
 
 * [spam](http://search.r-project.org/library/kernlab/html/spam.html)
 
-    - 57 variables on 4601 emails classified as <span style="color:Tomato">spam</span>  or <span style="color:MediumSeaGreen">ham</span> 
+    - 57 variables on 4601 emails classified as &lt;span style="color:Tomato"&gt;spam&lt;/span&gt;  or &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt; 
 
 * [banknote](http://search.r-project.org/library/alr3/html/banknote.html)
 
-    - Six measurements made on 100 <span style="color:MediumSeaGreen">genuine</span>  Swiss banknotes and 100 <span style="color:Tomato">counterfeit</span>  ones
+    - Six measurements made on 100 &lt;span style="color:MediumSeaGreen"&gt;genuine&lt;/span&gt;  Swiss banknotes and 100 &lt;span style="color:Tomato"&gt;counterfeit&lt;/span&gt;  ones
 
 ]
 
@@ -94,7 +98,7 @@ from 2006 to 2010
 
 .pull-left[
 
-### <span style="color:MediumSeaGreen">At a minimum:</span>
+### &lt;span style="color:MediumSeaGreen"&gt;At a minimum:&lt;/span&gt;
 
 * Applicable to classification and regression
     
@@ -110,7 +114,7 @@ from 2006 to 2010
 
 .pull-right[
 
-### <span style="color:MediumSeaGreen">Bonus features:</span>
+### &lt;span style="color:MediumSeaGreen"&gt;Bonus features:&lt;/span&gt;
 
 * Which predictors are important? ([`vip`](https://github.com/AFIT-R/vip))
 
@@ -128,26 +132,7 @@ from 2006 to 2010
 ---
 class: inverse, center, middle
 
-```{r setup, include=FALSE}
-# Set global R options
-options(htmltools.dir.version = FALSE)
-options(servr.daemon = TRUE)
 
-# Set global knitr chunk options
-knitr::opts_chunk$set(
-  fig.align = "center",
-  fig.path = "figures/", 
-  cache = TRUE,
-  dev = "svg",
-  error = FALSE,
-  message = FALSE, 
-  warning = FALSE, 
-  collapse = FALSE 
-)
-
-# Load required packages
-library(vip)
-```
 
 background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/99/Fog_forrest_frickberg.jpg)
 
@@ -163,17 +148,16 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 There is no simple rule for determining the edibility of a [mushroom](https://raw.githubusercontent.com/bgreenwell/MLDay18/master/data/mushroom.csv); no rules like **"leaflets three, let it be"**, **"hairy vine, no friend of mine"** and **"berries white, run in fright"** for poison ivy.
 
-```{r, echo=FALSE, out.width="50%"}
-knitr::include_graphics("figures/edible.jpg")
-```
+&lt;img src="figures/edible.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 
 --
 
-```{r mushroom-load, echo=TRUE}
-path <- paste0("https://raw.githubusercontent.com/bgreenwell/",
+
+```r
+path &lt;- paste0("https://raw.githubusercontent.com/bgreenwell/",
                "MLDay18/master/data/mushroom.csv")
-mushroom <- read.csv(path)  # load the data from GitHub
-mushroom$veil.type <- NULL  # only takes on a single value  #<<
+mushroom &lt;- read.csv(path)  # load the data from GitHub
+*mushroom$veil.type &lt;- NULL  # only takes on a single value
 ```
 
 
@@ -181,21 +165,22 @@ mushroom$veil.type <- NULL  # only takes on a single value  #<<
 
 ## Mushroom classification
 
-```{r mushroom-setup, echo=TRUE}
+
+```r
 # Load required packages
 library(caret)  # for data splitting function
 library(rpart)  # for binary recursive partitioning
 
 # Partition the data into train/test sets
 set.seed(101)
-trn_id <- createDataPartition(
+trn_id &lt;- createDataPartition(
   y = mushroom$Edibility, p = 0.5, list = FALSE
 )
-trn <- mushroom[trn_id, ]   # training data
-tst <- mushroom[-trn_id, ]  # test data
+trn &lt;- mushroom[trn_id, ]   # training data
+tst &lt;- mushroom[-trn_id, ]  # test data
 
 # Function to calculate accuracy
-accuracy <- function(pred, obs) {
+accuracy &lt;- function(pred, obs) {
   sum(diag(table(pred, obs))) / length(obs)
 }
 ```
@@ -207,15 +192,16 @@ accuracy <- function(pred, obs) {
 
 .pull-left[
 
-```{r mushroom-tree-1}
+
+```r
 # Decision stump (test error = 1.53%):
-cart1 <- rpart(
+cart1 &lt;- rpart(
   Edibility ~ ., data = trn,
-  control = rpart.control(maxdepth = 1) #<<
+* control = rpart.control(maxdepth = 1)
 )
 
 # Get test set predictions
-pred1 <- predict(
+pred1 &lt;- predict(
   cart1, newdata = tst, 
   type = "class"
 )
@@ -227,19 +213,24 @@ accuracy(
 )
 ```
 
+```
+## [1] 0.9847366
+```
+
 ]
 
 .pull-right[
 
-```{r mushroom-tree-2}
+
+```r
 # Optimal tree (test error = 0%):
-cart2 <- rpart(
+cart2 &lt;- rpart(
   Edibility ~ ., data = trn, 
-  control = list(cp = 0, minbucket = 1, minsplit = 1) #<<
+* control = list(cp = 0, minbucket = 1, minsplit = 1)
 )
 
 # Get test set predictions
-pred2 <- predict(
+pred2 &lt;- predict(
   cart2, newdata = tst, 
   type = "class"
 )
@@ -251,13 +242,13 @@ accuracy(
 )
 ```
 
+```
+## [1] 1
+```
+
 ]
 
-```{r mushroom-cm, include=FALSE}
-# Test set confusion matrices
-confusionMatrix(pred1, tst$Edibility)
-confusionMatrix(pred2, tst$Edibility)
-```
+
 
 
 ---
@@ -267,39 +258,14 @@ confusionMatrix(pred2, tst$Edibility)
 .pull-left[
 
 Decision stump (test error = 1.53%):
-```{r mushroom-tree-diagram-1, echo=FALSE, out.width="100%"}
-# Load required packages
-library(rpart.plot)
-
-# Tree diagram (deep tree)
-prp(cart1,
-    type = 4,
-    clip.right.labs = FALSE, 
-    branch.lwd = 2,
-    extra = 1, 
-    under = TRUE,
-    under.cex = 1.5,
-    split.cex = 1.5,
-    box.col = c("palegreen3", "pink")[cart1$frame$yval])
-```
+&lt;img src="figures/mushroom-tree-diagram-1-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
 .pull-right[
 
 Optimal tree (test error = 0%):
-```{r mushroom-tree-diagram-2, echo=FALSE, out.width="100%"}
-# Tree diagram (shallow tree)
-prp(cart2,
-    type = 4,
-    clip.right.labs = FALSE, 
-    branch.lwd = 2,
-    extra = 1, 
-    under = TRUE,
-    under.cex = 1.5,
-    split.cex = 1.5,
-    box.col = c("palegreen3", "pink")[cart2$frame$yval])
-```
+&lt;img src="figures/mushroom-tree-diagram-2-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -310,11 +276,11 @@ prp(cart2,
 
 --
 
-<br><br><br>
-.right[<div class="centered">
-<span style="color:Tomato"><font size="25">"If it smells bad, don't eat it!"</font></span>
-</div>]
-<br>
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+.right[&lt;div class="centered"&gt;
+&lt;span style="color:Tomato"&gt;&lt;font size="25"&gt;"If it smells bad, don't eat it!"&lt;/font&gt;&lt;/span&gt;
+&lt;/div&gt;]
+&lt;br&gt;
 .right[-Decision Stump]
 
 
@@ -326,19 +292,17 @@ prp(cart2,
 
 - Data from 4601 email messages collected at Hewlett-Packard Labs
 
-- **Goal:** predict whether an email message is <span style="color:Tomato">spam</span> (junk email) or <span style="color:MediumSeaGreen ">ham</span> (good email)
+- **Goal:** predict whether an email message is &lt;span style="color:Tomato"&gt;spam&lt;/span&gt; (junk email) or &lt;span style="color:MediumSeaGreen "&gt;ham&lt;/span&gt; (good email)
 
 - **Features:** relative frequencies in a message of 57 of the most commonly occurring words and punctuation marks in all the training the email messages
 
-- For this problem, not all errors are equal; misclassifying <span style="color:Tomato">spam</span> is not as bad as misclassifying <span style="color:MediumSeaGreen">ham</span>!
+- For this problem, not all errors are equal; misclassifying &lt;span style="color:Tomato"&gt;spam&lt;/span&gt; is not as bad as misclassifying &lt;span style="color:MediumSeaGreen"&gt;ham&lt;/span&gt;!
 
 ]
 
 .pull-right[
 
-```{r fig-spam-300, echo=FALSE, out.width="100%"}
-knitr::include_graphics("figures/this-is-spam.jpg")
-```
+&lt;img src="figures/this-is-spam.jpg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -347,25 +311,30 @@ knitr::include_graphics("figures/this-is-spam.jpg")
 
 ## Predicting email spam
 
-```{r spam-tree}
+
+```r
 # Load the data
-data(spam, package = "kernlab") #<<
+*data(spam, package = "kernlab")
 
 # Partition the data into train/test sets
 set.seed(101)  # for reproducibility
-trn_id <- createDataPartition(spam$type, p = 0.7, list = FALSE)
-trn <- spam[trn_id, ]                # training data
-tst <- spam[-trn_id, ]               # test data
-xtrn <- subset(trn, select = -type)  # training data features
-xtst <- subset(tst, select = -type)  # test data features
-ytrn <- trn$type                     # training data response
+trn_id &lt;- createDataPartition(spam$type, p = 0.7, list = FALSE)
+trn &lt;- spam[trn_id, ]                # training data
+tst &lt;- spam[-trn_id, ]               # test data
+xtrn &lt;- subset(trn, select = -type)  # training data features
+xtst &lt;- subset(tst, select = -type)  # test data features
+ytrn &lt;- trn$type                     # training data response
 
 # Fit a classification tree (cp found using k-fold CV)
-spam_tree <- rpart(type ~ ., data = trn, cp = 0.001) #<<
-pred <- predict(spam_tree, newdata = xtst, type = "class")
+*spam_tree &lt;- rpart(type ~ ., data = trn, cp = 0.001)
+pred &lt;- predict(spam_tree, newdata = xtst, type = "class")
 
 # Compute test set accuracy
-(spam_tree_acc <- accuracy(pred = pred, obs = tst$type))
+(spam_tree_acc &lt;- accuracy(pred = pred, obs = tst$type))
+```
+
+```
+## [1] 0.9260334
 ```
 
 
@@ -375,18 +344,7 @@ pred <- predict(spam_tree, newdata = xtst, type = "class")
 
 .scrollable[
 
-```{r spam-tree-diagram, echo=FALSE, out.width="70%"}
-# Tree diagram
-prp(spam_tree,
-    type = 4,
-    clip.right.labs = FALSE, 
-    branch.lwd = 2,
-    extra = 1, 
-    under = TRUE,
-    under.cex = 1.5,
-    split.cex = 1.5,
-    box.col = c("palegreen3", "pink")[spam_tree$frame$yval])
-```
+&lt;img src="figures/spam-tree-diagram-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -397,19 +355,40 @@ prp(spam_tree,
 
 .pull-left[
 
-```{r spam-vi}
+
+```r
 # Extract tibble of variable importance scores
-vip::vi(spam_tree)  #<<
+*vip::vi(spam_tree)
+```
+
+```
+## # A tibble: 48 x 2
+##    Variable        Importance
+##    &lt;chr&gt;                &lt;dbl&gt;
+##  1 charExclamation      508  
+##  2 capitalLong          260  
+##  3 capitalAve           199  
+##  4 free                 198  
+##  5 charDollar           195  
+##  6 your                 183  
+##  7 remove               177  
+##  8 all                  127  
+##  9 capitalTotal         108  
+## 10 hp                    74.3
+## # ... with 38 more rows
 ```
 
 ]
 
 .pull-right[
 
-```{r spam-vip, out.width="100%"}
+
+```r
 # Construct ggplot2-based variable importance plot
-vip(spam_tree, num_features = 10)  #<<
+*vip(spam_tree, num_features = 10)
 ```
+
+&lt;img src="figures/spam-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -422,17 +401,17 @@ vip(spam_tree, num_features = 10)  #<<
 
 ### Advantages:
 
-* <span style="color:MediumSeaGreen">Small trees are easy to interpret</span>
+* &lt;span style="color:MediumSeaGreen"&gt;Small trees are easy to interpret&lt;/span&gt;
 
-* <span style="color:MediumSeaGreen">Trees scale well to large $N$</span> (fast!!)
+* &lt;span style="color:MediumSeaGreen"&gt;Trees scale well to large `\(N\)`&lt;/span&gt; (fast!!)
 
-* <span style="color:MediumSeaGreen">Can handle data of all types</span> (i.e., requires little, if any, coding)
+* &lt;span style="color:MediumSeaGreen"&gt;Can handle data of all types&lt;/span&gt; (i.e., requires little, if any, coding)
 
-* <span style="color:MediumSeaGreen">Automatic variable selection</span>
+* &lt;span style="color:MediumSeaGreen"&gt;Automatic variable selection&lt;/span&gt;
 
-* <span style="color:MediumSeaGreen">Can handle missing data</span> (through *surrogate splits*)
+* &lt;span style="color:MediumSeaGreen"&gt;Can handle missing data&lt;/span&gt; (through *surrogate splits*)
 
-* <span style="color:MediumSeaGreen">Completely nonparametric</span> (great for DM and EDA tasks!)
+* &lt;span style="color:MediumSeaGreen"&gt;Completely nonparametric&lt;/span&gt; (great for DM and EDA tasks!)
 
 ]
 
@@ -442,15 +421,15 @@ vip(spam_tree, num_features = 10)  #<<
 
 ### Disadvantages:
 
-* <span style="color:Tomato">Large trees can be difficult to interpret</span>
+* &lt;span style="color:Tomato"&gt;Large trees can be difficult to interpret&lt;/span&gt;
 
-* <span style="color:Tomato">Trees are step functions</span> (i.e., binary splits)
+* &lt;span style="color:Tomato"&gt;Trees are step functions&lt;/span&gt; (i.e., binary splits)
 
-* <span style="color:Tomato">Greedy splitting algorithms</span> (i.e., trees are noisy)
+* &lt;span style="color:Tomato"&gt;Greedy splitting algorithms&lt;/span&gt; (i.e., trees are noisy)
 
-* <span style="color:Tomato">All splits depend on previous splits</span> (i.e., high order interactions)
+* &lt;span style="color:Tomato"&gt;All splits depend on previous splits&lt;/span&gt; (i.e., high order interactions)
 
-* <span style="color:Tomato">Data is essentially taken away after each split</span>
+* &lt;span style="color:Tomato"&gt;Data is essentially taken away after each split&lt;/span&gt;
 
 ]
 
@@ -459,10 +438,8 @@ vip(spam_tree, num_features = 10)  #<<
 
 ## How do trees measure up?
 
-```{r fig-characteristics, echo=FALSE, out.width="65%"}
-knitr::include_graphics("figures/esl-tbl.png")
-```
-<br>
+&lt;img src="figures/esl-tbl.png" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
 .center[**Source:** The Elements of Statistical Learning, Second Edition]
 
 
@@ -474,21 +451,21 @@ knitr::include_graphics("figures/esl-tbl.png")
 
 * **Main idea:** breaking the [*bias-variance trade-off*](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
 
-    - $Error \approx Bias + Variance$
+    - `\(Error \approx Bias + Variance\)`
 
 * Two popular algorithms (can be applied to any model, **not just trees!**):
 
-    - Bagging (<span style="color:Magenta">reduce variance by averaging</span>)
+    - Bagging (&lt;span style="color:Magenta"&gt;reduce variance by averaging&lt;/span&gt;)
 
-    - Boosting (<span style="color:Magenta">reduce bias by building models sequentially</span>)
+    - Boosting (&lt;span style="color:Magenta"&gt;reduce bias by building models sequentially&lt;/span&gt;)
     
 * Random forest is just a slight modification over bagging applied to decision trees!
 
-<br>
+&lt;br&gt;
 
-<center>
-<font size="8"><span style="color:DarkBlue">Boosting</span> >= <span style="color:MediumSeaGreen">Random forest</span> > <span style="color:MediumOrchid ">Bagging</span> > <span style="color:DarkOrange">Single tree</span></font>
-</center>
+&lt;center&gt;
+&lt;font size="8"&gt;&lt;span style="color:DarkBlue"&gt;Boosting&lt;/span&gt; &gt;= &lt;span style="color:MediumSeaGreen"&gt;Random forest&lt;/span&gt; &gt; &lt;span style="color:MediumOrchid "&gt;Bagging&lt;/span&gt; &gt; &lt;span style="color:DarkOrange"&gt;Single tree&lt;/span&gt;&lt;/font&gt;
+&lt;/center&gt;
 
 
 ---
@@ -517,21 +494,19 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
     2. Fit an **overgrown tree** to the resampled data set
     
-    3. Repeat a large number of times ( $\ge 500$ , say)
+    3. Repeat a large number of times ( `\(\ge 500\)` , say)
 
 ]
  
 
 .pull-right[
 
-```{r fig-bagged-trees, echo=FALSE, out.width="80%"}
-knitr::include_graphics("figures/millionaire.png")
-```
+&lt;img src="figures/millionaire.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ]
 * Predictions are combined by popular vote (**classification**) or averaging (**regression**)
 
-* Same idea as ["wisdom of the crowd"](https://en.wikipedia.org/wiki/Wisdom_of_the_crowd) (<span style="color:purple">Francis Galton's Ox weight survey</span>)
+* Same idea as ["wisdom of the crowd"](https://en.wikipedia.org/wiki/Wisdom_of_the_crowd) (&lt;span style="color:purple"&gt;Francis Galton's Ox weight survey&lt;/span&gt;)
 
 * Improves the stability and accuracy of noisy models (e.g., individual trees)
 
@@ -540,78 +515,28 @@ knitr::include_graphics("figures/millionaire.png")
 
 ## Bagging trees
 
-```{r bagging-1, echo=FALSE, out.width="65%"}
-# Simulate some sine wave data
-set.seed(1112)  # for reproducibility
-x <- seq(from = 0, to = 2 * pi, length = 100)
-y <- sin(x) + rnorm(length(x), sd = 0.5)
-plot(x, y)
-lines(x, sin(x))
-legend("topright", legend = "True function", lty = 1, inset = 0.01,
-       box.col = "transparent")
-```
+&lt;img src="figures/bagging-1-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 ## Trees are step functions
 
-```{r bagging-2, echo=FALSE, out.width="65%"}
-# Fit a single regression tree
-fit <- rpart(y ~ x, cp = 0)
-pred <- predict(fit)
-plot(x, y)
-lines(x, sin(x))
-cols <- RColorBrewer::brewer.pal(9, "Set1")
-lines(x, pred, col = cols[1L], lwd = 2)
-lgnd <- c("True function", "Single tree")
-legend("topright", legend = lgnd, col = c("black", cols[1L]), 
-       lty = 1, inset = 0.01, box.col = "transparent")
-```
+&lt;img src="figures/bagging-2-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 ## Trees are noisy
 
-```{r bagging-3, echo=FALSE, out.width="65%"}
-# Fit many regression trees to bootstrap samples
-plot(x, y)
-nsim <- 1000
-pred_mat <- matrix(nrow = length(x), ncol = nsim)
-set.seed(1145)  # for reproducibility
-id <- replicate(nsim, sort(sample(length(x), replace = TRUE)))
-for (i in 1:nsim) {
-  fit <- rpart(y[id[, i]] ~ x[id[, i]], cp = 0)
-  pred_mat[, i] <- predict(fit)
-  lines(x[id[, i]], pred_mat[, i], 
-        col = adjustcolor(cols[2L], alpha.f = 0.05))
-}
-lines(x, sin(x))
-lines(x, pred, col = cols[1L], lwd = 2)
-lgnd <- c("True function", "Single tree", "Bootstrapped tree")
-legend("topright", legend = lgnd, col = c("black", cols[1L:2L]), 
-       lty = 1, inset = 0.01, box.col = "transparent")
-```
+&lt;img src="figures/bagging-3-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 ## Bagging reduces variance
 
-```{r bagging-4, echo=FALSE, out.width="65%"}
-plot(x, y)
-for (i in 1:nsim) {
-  lines(x[id[, i]], pred_mat[, i], 
-        col = adjustcolor(cols[2L], alpha.f = 0.05))
-}
-lines(x, sin(x))
-lines(x, pred, col = cols[1L], lwd = 2)
-lines(x, apply(pred_mat, MARGIN = 1, FUN = mean), col = cols[6L], lwd = 2)
-lgnd <- c("True function", "Single tree", "Bootstrapped tree", "Averaged trees")
-legend("topright", legend = lgnd, col = c("black", cols[c(1, 2, 6)]), lty = 1, 
-       inset = 0.01, box.col = "transparent")
-```
+&lt;img src="figures/bagging-4-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -620,17 +545,18 @@ legend("topright", legend = lgnd, col = c("black", cols[c(1, 2, 6)]), lty = 1,
 
 .pull-left[
 
-```{r}
+
+```r
 # Load required packages
-library(randomForest)  #<<
+*library(randomForest)
 
 # Fit a bagger model
 set.seed(1633)  # for reproducibility
-spam_bag <- randomForest(
+spam_bag &lt;- randomForest(
   type ~ ., 
   data = trn, 
   ntree = 250,
-  mtry = ncol(xtrn),  # use all available features #<<
+* mtry = ncol(xtrn),  # use all available features
   xtest = subset(tst, select = -type),
   ytest = tst$type,
   keep.forest = TRUE
@@ -641,22 +567,7 @@ spam_bag <- randomForest(
 
 .pull-right[
 
-```{r, echo=FALSE, out.width="400"}
-# Compute test error
-pred <- predict(spam_bag, newdata = xtst, type = "class")
-spam_bag_acc <- accuracy(pred = pred, obs = tst$type)
-
-# Plot test error
-dark2 <- RColorBrewer::brewer.pal(8, "Dark2")
-par(mar = c(4, 4, 0.1, 0.1))
-plot(seq_len(spam_bag$ntree), spam_bag$test$err.rate[, "Test"], type = "l", 
-     col = dark2[1L], ylim = c(0.04, 0.11), las = 1,
-     ylab = "Test error", xlab = "Number of trees")
-abline(h = 1 - spam_tree_acc, lty = 2, col = "black")
-abline(h = 1 - spam_bag_acc, lty = 2, col = dark2[1L])
-legend("topright", c("Single tree", "Bagging"),
-       col = c("black", dark2[1L]), lty = c(2, 1), lwd = 1)
-```
+&lt;img src="figures/unnamed-chunk-3-1.svg" width="400" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -687,11 +598,11 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
       - This essentially **"decorrelates"** the trees in the ensemble!
     
-    - The number of randomly selected variables, denoted $m_{try}$, is a **tuning parameter** (arguably the only tuning parameter in a random forest)
+    - The number of randomly selected variables, denoted `\(m_{try}\)`, is a **tuning parameter** (arguably the only tuning parameter in a random forest)
 
-* Bagging introduces <span style="color:CornFlowerBlue">randomness into the rows</span> of the data
+* Bagging introduces &lt;span style="color:CornFlowerBlue"&gt;randomness into the rows&lt;/span&gt; of the data
 
-* Random forest introduces <span style="color:CornFlowerBlue">randomness into the rows and columns</span> of the data
+* Random forest introduces &lt;span style="color:CornFlowerBlue"&gt;randomness into the rows and columns&lt;/span&gt; of the data
 
 * [*Extremely randomized trees*](https://link.springer.com/article/10.1007/s10994-006-6226-1) take this randomness one step further to reduce variance!
 
@@ -726,7 +637,7 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
     
     - Accepts sparse numeric matrices (i.e., `dgcMatrix` objects from the [`Matrix`](https://cran.r-project.org/package=Matrix) package)
     
-    - Estimated time to completion!! `r emo::ji("money")`
+    - Estimated time to completion!! 🤑
 
 ]
 
@@ -769,17 +680,18 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 .pull-left[
 
-```{r}
+
+```r
 # Load required packages
 library(randomForest)
 
 # Fit a random forest
 set.seed(1633)  # for reproducibility
-spam_rf <- randomForest(
+spam_rf &lt;- randomForest(
   type ~ ., 
   data = trn, 
   ntree = 250,
-  mtry = 7,  # floor(sqrt(p))  #<<
+* mtry = 7,  # floor(sqrt(p))
   xtest = subset(tst, select = -type),
   ytest = tst$type,
   keep.forest = TRUE
@@ -790,23 +702,7 @@ spam_rf <- randomForest(
 
 .pull-right[
 
-```{r, echo=FALSE, out.width="400"}
-# Compute test error
-pred <- predict(spam_rf, newdata = xtst, type = "class")
-spam_rf_acc <- accuracy(pred = pred, obs = tst$type)
-
-# Plot test error
-par(mar = c(4, 4, 0.1, 0.1))
-plot(seq_len(spam_rf$ntree), spam_rf$test$err.rate[, "Test"], type = "l", 
-     col = dark2[4L], ylim = c(0.04, 0.11), 
-     ylab = "Test error", xlab = "Number of trees")
-lines(seq_len(spam_rf$ntree), spam_bag$test$err.rate[, "Test"], col = dark2[1L])
-abline(h = 1 - spam_tree_acc, lty = 2, col = "black")
-abline(h = 1 - spam_bag_acc, lty = 2, col = dark2[1L])
-abline(h = 1 - spam_rf_acc, lty = 2, col = dark2[4L])
-legend("topright", c("Single tree", "Bagging", "Random forest"),
-       col = c("black", dark2[c(1, 4)]), lty = c(2, 1, 1), lwd = 1)
-```
+&lt;img src="figures/unnamed-chunk-5-1.svg" width="400" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -817,19 +713,19 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 .pull-left[
 
-### <span style="color:MediumSeaGreen">Advantages:</span>
+### &lt;span style="color:MediumSeaGreen"&gt;Advantages:&lt;/span&gt;
 
 * Competitive accuracy
 
 * Supervised and unsupervised learning
 
-* *Out-of-bag* data `r emo::ji("sunglasses")`
+* *Out-of-bag* data 😎
 
     - Free cross-validation
 
     - Novel variable importance
 
-* Novel <span style="color:Purple">proximity matrix</span> `r emo::ji("sunglasses")`
+* Novel &lt;span style="color:Purple"&gt;proximity matrix&lt;/span&gt; 😎
 
     - Outlier/novelty detection
     
@@ -841,17 +737,15 @@ legend("topright", c("Single tree", "Bagging", "Random forest"),
 
 .pull-right[
 
-### <span style="color:Tomato">Disadvantages:</span>
+### &lt;span style="color:Tomato"&gt;Disadvantages:&lt;/span&gt;
 
 * Missing values (**why?**)
 
 * Can be slow on large data sets (deep trees)!
 
-    - $m_{try}$ mitigates this issue to some extent
+    - `\(m_{try}\)` mitigates this issue to some extent
 
-```{r fig-bells-and-whistles, echo=FALSE, out.width="80%"}
-knitr::include_graphics("figures/bells-and-whistles.jpg")
-```
+&lt;img src="figures/bells-and-whistles.jpg" width="80%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -860,16 +754,21 @@ knitr::include_graphics("figures/bells-and-whistles.jpg")
 
 ## Out-of-bag data
 
-* For large enough $N$, on average, $1 - e^{-1} \approx 63.21$% or the original records end up in any bootstrap sample
+* For large enough `\(N\)`, on average, `\(1 - e^{-1} \approx 63.21\)`% or the original records end up in any bootstrap sample
 
-```{r bootstrap}
-N <- 100000
+
+```r
+N &lt;- 100000
 set.seed(1537)  # for reproducibility
-x <- rnorm(N)
+x &lt;- rnorm(N)
 mean(x %in% sample(x, replace = TRUE))  # non-OOB proportion
 ```
 
-* Thus, roughly $e^{-1} \approx 36.79$% of the original observations are not used in the construction of a particular tree
+```
+## [1] 0.63232
+```
+
+* Thus, roughly `\(e^{-1} \approx 36.79\)`% of the original observations are not used in the construction of a particular tree
 
 * These observations are considered *out-of-bag* (OOB) and can be used to
 
@@ -882,23 +781,7 @@ mean(x %in% sample(x, replace = TRUE))  # non-OOB proportion
 
 ## Predicting email spam
 
-```{r, echo=FALSE, out.width="60%"}
-# Compute test error
-pred <- predict(spam_rf, newdata = xtst, type = "class")
-spam_rf_acc <- accuracy(pred = pred, obs = tst$type)
-
-# Plot test error
-par(mar = c(4, 4, 0.1, 0.1))
-plot(seq_len(spam_rf$ntree), spam_rf$test$err.rate[, "Test"], type = "l", 
-     col = dark2[4L], ylim = c(0.04, 0.11), 
-     ylab = "Error estimate", xlab = "Number of trees")
-lines(seq_len(spam_rf$ntree), spam_rf$err.rate[, "OOB"], type = "l", 
-     col = dark2[1L])
-abline(h = spam_rf$err.rate[spam_rf$ntree, "OOB"], lty = 2, col = dark2[1L])
-abline(h = 1 - spam_rf_acc, lty = 2, col = dark2[4L])
-legend("topright", c("Random forest (OOB)", "Random forest (test)"),
-       col = c(dark2[c(1, 4)]), lty = c(1, 1))
-```
+&lt;img src="figures/unnamed-chunk-6-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -907,15 +790,15 @@ legend("topright", c("Random forest (OOB)", "Random forest (test)"),
 
 * **Traditional approach:** Average variable importance scores (i.e., total goodness of split) over all the trees in the ensemble (this is what is done for GBMs)
 
-* **Novel approach:** To estimate the importance of the $k$-th variable, $x_k$:
+* **Novel approach:** To estimate the importance of the `\(k\)`-th variable, `\(x_k\)`:
 
   1. Record the OOB performance of the model
   
-  2. Randomly permute all the values of $x_k$ in the OOB data
+  2. Randomly permute all the values of `\(x_k\)` in the OOB data
   
   3. Recompute the OOB performance of the model
   
-  4. The difference between the two OOB performance measures the strength of the structural importance of $x_k$
+  4. The difference between the two OOB performance measures the strength of the structural importance of `\(x_k\)`
   
 * Fundamentally different as these importance scores are **NOT** based on data seen by the individual trees!
 
@@ -924,30 +807,29 @@ legend("topright", c("Random forest (OOB)", "Random forest (test)"),
 
 ## Boston housing example
 
-* Housing data from $N = 506$ census tracts in the city of Boston for the year 1970
+* Housing data from `\(N = 506\)` census tracts in the city of Boston for the year 1970
 
 * The data violate many classical assumptions like linearity, normality, and constant variance
 
 --
 
-* Harrison and Rubinfeld's housing value equation ( $R^2 = 0.81$ ):
+* Harrison and Rubinfeld's housing value equation ( `\(R^2 = 0.81\)` ):
 
-```{r, echo=FALSE, out.width="80%"}
-knitr::include_graphics("figures/boston-eqn.png")
-```
+&lt;img src="figures/boston-eqn.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 --
 
 * Nowadays, many supervised learning algorithms can fit the data automatically in seconds (**typically with higher accuracy!**)
 
-* The downfall, however, is some loss of interpretation since these algorithms typically do not produce simple prediction formulas (**but there's still hope!** `r emo::ji("pray")`)
+* The downfall, however, is some loss of interpretation since these algorithms typically do not produce simple prediction formulas (**but there's still hope!** 🙏)
 
 
 ---
 
-```{r boston-ranger}
+
+```r
 # Load required packages
-library(ranger)  # a much faster implementation of random forest  #<<
+*library(ranger)  # a much faster implementation of random forest
 
 # Load the (corrected) Boston housing data
 data(boston, package = "pdp")
@@ -955,11 +837,12 @@ data(boston, package = "pdp")
 
 .pull-left[
 
-```{r boston-rf-timing}
+
+```r
 # Using the randomForest package
 set.seed(2007)  # for reproducibility
 system.time(
-  boston_rf <- randomForest(
+  boston_rf &lt;- randomForest(
     cmedv ~ ., data = boston, 
     ntree = 5000,
     mtry = 5,
@@ -967,40 +850,46 @@ system.time(
   )
 )
 ```
-```{r, echo=FALSE}
-boston_rf$rsq[boston_rf$ntree]
+
+```
+##    user  system elapsed 
+##   6.560   0.044   6.609
+```
+
+```
+## [1] 0.8944872
 ```
 
 ]
 
 .pull-right[
 
-```{r boston-ranger-timing}
+
+```r
 # Using the ranger package
 set.seed(1652)  # for reproducibility
 system.time(
-  boston_ranger <- ranger(
+  boston_ranger &lt;- ranger(
     cmedv ~ ., data = boston, 
     num.trees = 5000, 
-    mtry = 5,  # :/  #<<
+*   mtry = 5,  # :/
     importance = "impurity"
   )
 )
 ```
-```{r, echo=FALSE}
-boston_ranger$r.squared
+
+```
+##    user  system elapsed 
+##   5.932   0.032   0.881
+```
+
+```
+## [1] 0.8936254
 ```
 
 ]
 
-```{r boston-rf, echo=FALSE}
-# Refit models with less trees
-set.seed(1453)  # for reproducibility
-boston_rf <- randomForest(cmedv ~ ., data = boston, ntree = 500,
-                          importance = TRUE, proximity = TRUE)
-boston_ranger <- ranger(cmedv ~ ., data = boston, num.trees = 500,
-                        importance = "impurity")
-```
+
 
 
 ---
@@ -1023,37 +912,42 @@ boston_ranger <- ranger(cmedv ~ ., data = boston, num.trees = 500,
 
 .pull-right[
 
-```{r vip-install, eval=FALSE}
+
+```r
 # Not yet on CRAN (experimental)
 devtools::install_github("AFIT-R/vip")
 ```
 
-```{r vip-badge, echo=FALSE, out.width="80%"}
-knitr::include_graphics("figures/vip-logo.svg")
-```
+&lt;img src="figures/vip-logo.svg" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-```{r boston-rf-varImpPlot, fig.width=6, fig.height=4, out.width="100%"}
+
+```r
 # Construct variable importance plots (the old way)
 par(mfrow = c(1, 2))  # side-by-side plots
-varImpPlot(boston_rf)  # randomForest::varImpPlot()  #<<
+*varImpPlot(boston_rf)  # randomForest::varImpPlot()
 ```
+
+&lt;img src="figures/boston-rf-varImpPlot-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-```{r boston-rf-vip, fig.width=9, fig.height=4, out.width="100%"}
+
+```r
 # Load required packages
 library(vip)  # for better (and consistent) variable importance plots
 
 # Construct variable importance plots
-p1 <- vip(boston_rf, type = 1) + ggtitle("randomForest")
-p2 <- vip(boston_rf, type = 2) + ggtitle("randomForest")
-p3 <- vip(boston_ranger) + ggtitle("ranger")
-grid.arrange(p1, p2, p3, ncol = 3)  #<<
+p1 &lt;- vip(boston_rf, type = 1) + ggtitle("randomForest")
+p2 &lt;- vip(boston_rf, type = 2) + ggtitle("randomForest")
+p3 &lt;- vip(boston_ranger) + ggtitle("ranger")
+*grid.arrange(p1, p2, p3, ncol = 3)
 ```
+
+&lt;img src="figures/boston-rf-vip-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1064,19 +958,19 @@ grid.arrange(p1, p2, p3, ncol = 3)  #<<
 
 * [Partial dependence plots (PDPs)](https://journal.r-project.org/archive/2017/RJ-2017-016/index.html) help visualize the relationship between a subset of the features (typically 1-3) and the response
 
-* Let $x_1$ be the predictor variable of interest with unique values $\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}$
+* Let `\(x_1\)` be the predictor variable of interest with unique values `\(\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}\)`
 
-* The partial dependence of the response on $x_1$ can be constructed as follows:
+* The partial dependence of the response on `\(x_1\)` can be constructed as follows:
 
-    1. For $i \in \left\{1, 2, \dots, k\right\}$:
+    1. For `\(i \in \left\{1, 2, \dots, k\right\}\)`:
     
-        a. Copy the training data and replace the original values of $x_1$ with the constant $x_{1i}$
+        a. Copy the training data and replace the original values of `\(x_1\)` with the constant `\(x_{1i}\)`
     
         b. Compute the vector of predicted values from the modified copy of the training data
         
-        c. Compute the average prediction to obtain $\bar{f}_1\left(x_{1i}\right)$
+        c. Compute the average prediction to obtain `\(\bar{f}_1\left(x_{1i}\right)\)`
 
-    2. Plot the pairs $\left\{x_{1i}, \bar{f}_1\left(x_{1i}\right)\right\}$ for $i = 1, 2, \dotsc, k$
+    2. Plot the pairs `\(\left\{x_{1i}, \bar{f}_1\left(x_{1i}\right)\right\}\)` for `\(i = 1, 2, \dotsc, k\)`
 
 ]
 
@@ -1095,13 +989,14 @@ grid.arrange(p1, p2, p3, ncol = 3)  #<<
 
     - Allows for multivariate displays (i.e., interactions) and so much more!!
     
-    - Includes options for **parallel processing** and **progress bars** `r emo::ji("sunglasses")`
+    - Includes options for **parallel processing** and **progress bars** 😎
 
 ]
 
 .pull-right[
 
-```{r, eval=FALSE}
+
+```r
 # Install from CRAN
 install.packages("pdp")
 
@@ -1109,9 +1004,7 @@ install.packages("pdp")
 devtools::install_github("bgreenwell/pdp")
 ```
 
-```{r, echo=FALSE, out.width="65%"}
-knitr::include_graphics("figures/pdp-logo.png")
-```
+&lt;img src="figures/pdp-logo.png" width="65%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1120,42 +1013,48 @@ knitr::include_graphics("figures/pdp-logo.png")
 
 ## Partial dependence plots
 
-```{r boston-rf-pdps, fig.width=12, fig.height=4, out.width="100%"}
+
+```r
 # Load required packages
 library(pdp)
 
 # PDPs for the top two predictors
-p1 <- partial(boston_ranger, pred.var = "lstat", plot = TRUE)
-p2 <- partial(boston_ranger, pred.var = "rm", plot = TRUE)
-p3 <- partial(boston_ranger, pred.var = c("lstat", "rm"),  #<<
-              chull = TRUE, plot = TRUE)                   #<<
+p1 &lt;- partial(boston_ranger, pred.var = "lstat", plot = TRUE)
+p2 &lt;- partial(boston_ranger, pred.var = "rm", plot = TRUE)
+*p3 &lt;- partial(boston_ranger, pred.var = c("lstat", "rm"),
+*             chull = TRUE, plot = TRUE)
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
+
+&lt;img src="figures/boston-rf-pdps-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 ## Partial dependence plots
 
-```{r 3d-plots, echo=TRUE}
+
+```r
 # 3-D plots
-pd <- attr(p3, "partial.data")  # no need to recalculate #<<
-p1 <- plotPartial(pd, 
+*pd &lt;- attr(p3, "partial.data")  # no need to recalculate
+p1 &lt;- plotPartial(pd, 
   levelplot = FALSE, drape = TRUE, colorkey = FALSE,
   screen = list(z = -20, x = -60)
 )
 ```
 
-```{r ggplot2-plots, echo=TRUE}
+
+```r
 # Using ggplot2
 library(ggplot2)
-p2 <- autoplot(pd)
+p2 &lt;- autoplot(pd)
 ```
 
-```{r ice-curves, echo=TRUE}
+
+```r
 # ICE and c-ICE curves
-p3 <- boston_ranger %>%  # %>% is automatically imported!
-  partial(pred.var = "rm", ice = TRUE, center = TRUE) %>%
+p3 &lt;- boston_ranger %&gt;%  # %&gt;% is automatically imported!
+  partial(pred.var = "rm", ice = TRUE, center = TRUE) %&gt;%
   autoplot(alpha = 0.1)
 ```
 
@@ -1164,33 +1063,13 @@ p3 <- boston_ranger %>%  # %>% is automatically imported!
 
 ## Partial dependence plots
 
-```{r, echo=TRUE, fig.width=12, fig.height=4, out.width="100%"}
+
+```r
 # Display all three plots side-by-side
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
-
----
-
-## Proximity matrix
-
-* In random forests (and bagging), **trees are intentionally grown deep**!
-
-
----
-
-```{r mushroom-tree-diagram-3, echo=FALSE, out.width="80%"}
-# Tree diagram (shallow tree)
-prp(cart2,
-    type = 4,
-    clip.right.labs = FALSE, 
-    branch.lwd = 2,
-    extra = 1, 
-    under = TRUE,
-    under.cex = 1.5,
-    split.cex = 1.5,
-    box.col = c("palegreen3", "pink")[cart2$frame$yval])
-```
+&lt;img src="figures/unnamed-chunk-12-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1199,17 +1078,29 @@ prp(cart2,
 
 * In random forests (and bagging), **trees are intentionally grown deep**!
 
-    1. Initialize the proximity between cases $i$ and $j$ to zero: $prox_{ij} = 0$
+
+---
+
+&lt;img src="figures/mushroom-tree-diagram-3-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Proximity matrix
+
+* In random forests (and bagging), **trees are intentionally grown deep**!
+
+    1. Initialize the proximity between cases `\(i\)` and `\(j\)` to zero: `\(prox_{ij} = 0\)`
 
     2. After a tree is grown, put all of the data, both training and OOB, down the tree
 
-    3. If cases $i$ and $j$ land in the same terminal node, increase $prox_{ij}$ by one
+    3. If cases `\(i\)` and `\(j\)` land in the same terminal node, increase `\(prox_{ij}\)` by one
 
-    4. At the end, normalize $prox_{ij}$ by dividing by the number of trees in the forest
+    4. At the end, normalize `\(prox_{ij}\)` by dividing by the number of trees in the forest
 
 * The pairwise proximities can be used to construct a useful distance matrix
 
-* **Requires the storage of an $N \times N$ matrix!!** `r emo::ji("scream")`
+* **Requires the storage of an `\(N \times N\)` matrix!!** 😱
 
 * Only available in [`randomForest`](https://cran.r-project.org/package=randomForest), [`party`](https://cran.r-project.org/web/packages/party/index.html), and [`bigrf`](https://github.com/aloysius-lim/bigrf)
 
@@ -1218,20 +1109,27 @@ prp(cart2,
 
 ## Swiss banknote data
 
-```{r banknote-rf}
+
+```r
 # Load the data
 data(banknote, package = "alr3")
 
 # Fit a random forest
 set.seed(1701)  # for reproducibility
-banknote_rf <- randomForest(
+banknote_rf &lt;- randomForest(
   as.factor(Y) ~ ., 
   data = banknote, 
-  proximity = TRUE  #<<
+* proximity = TRUE
 )
 
 # Print the OOB confusion matrix
 banknote_rf$confusion
+```
+
+```
+##    0   1 class.error
+## 0 99   1        0.01
+## 1  0 100        0.00
 ```
 
 
@@ -1239,30 +1137,34 @@ banknote_rf$confusion
 
 ## Proximity matrix
 
-```{r heatmap, out.width="50%"}
+
+```r
 # Heatmap of proximity-based distance matrix
 heatmap(1 - banknote_rf$proximity, col = viridis::plasma(256))
 ```
+
+&lt;img src="figures/heatmap-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
 ## Outlier scores
 
-Outlyingness of case $n$ in class $j$ to all other cases in class $j$: $$out\left(n\right) = N / \sum_{cl\left(k\right) = j} prox_{ik} ^ 2$$
+Outlyingness of case `\(n\)` in class `\(j\)` to all other cases in class `\(j\)`: `$$out\left(n\right) = N / \sum_{cl\left(k\right) = j} prox_{ik} ^ 2$$`
 
 .pull-left[
 
-```{r outlier, eval=FALSE}
+
+```r
 # Dot chart of proximity-based outlier scores
-outlyingness <- tibble::tibble(
-  "out" = outlier(banknote_rf),  #<<
+outlyingness &lt;- tibble::tibble(
+* "out" = outlier(banknote_rf),
   "obs" = seq_along(out),
   "class" = as.factor(banknote$Y)
 )
 ggplot(outlyingness, aes(x = obs, y = out)) +
   geom_point(aes(color = class, size = out), alpha = 0.5) +
-  geom_hline(yintercept = 10, linetype = 2) +  #<<
+* geom_hline(yintercept = 10, linetype = 2) +
   labs(x = "Observation", y = "Outlyingness") +
   theme_light() +
   theme(legend.position = "none")
@@ -1272,20 +1174,7 @@ ggplot(outlyingness, aes(x = obs, y = out)) +
 
 .pull-right[
 
-```{r outlier-plot, echo=FALSE, out.width="90%"}
-# Dot chart of proximity-based outlier scores
-outlyingness <- tibble::tibble(
-  "out" = outlier(banknote_rf),  #<<
-  "obs" = seq_along(out),
-  "class" = as.factor(banknote$Y)
-)
-ggplot(outlyingness, aes(x = obs, y = out)) +
-  geom_point(aes(color = class, size = out), alpha = 0.5) +
-  geom_hline(yintercept = 10, linetype = 2) +  #<<
-  labs(x = "Observation", y = "Outlyingness") +
-  theme_light() +
-  theme(legend.position = "none")
-```
+&lt;img src="figures/outlier-plot-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1294,10 +1183,13 @@ ggplot(outlyingness, aes(x = obs, y = out)) +
 
 ## Multi-dimensional scaling
 
-```{r MDS, out.width="50%"}
+
+```r
 # Multi-dimensional scaling plot of proximity matrix
 MDSplot(banknote_rf, fac = as.factor(banknote$Y), k = 2, cex = 1.5)
 ```
+
+&lt;img src="figures/MDS-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1372,19 +1264,19 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/Forest#/med
 
 ## GBMs with squared-error loss
 
-1. Given a training sample $\boldsymbol{d} = \left(\boldsymbol{X}, \boldsymbol{y}\right)$. Fix the number of steps $B$, the shrinkage factor $\epsilon$, and the tree depth $d$. Set the initial fit $\widehat{G}_0 \equiv 0$, and the residual vector $\boldsymbol{r} = \boldsymbol{y}$.
+1. Given a training sample `\(\boldsymbol{d} = \left(\boldsymbol{X}, \boldsymbol{y}\right)\)`. Fix the number of steps `\(B\)`, the shrinkage factor `\(\epsilon\)`, and the tree depth `\(d\)`. Set the initial fit `\(\widehat{G}_0 \equiv 0\)`, and the residual vector `\(\boldsymbol{r} = \boldsymbol{y}\)`.
 
-2. For $b = 1, 2, \dots, B$ repeat:
+2. For `\(b = 1, 2, \dots, B\)` repeat:
 
-    a) Fit a regression tree $\tilde{g}_b$ to the data $\left(\boldsymbol{X}, \boldsymbol{r}\right)$, grown best-first to depth $d$
+    a) Fit a regression tree `\(\tilde{g}_b\)` to the data `\(\left(\boldsymbol{X}, \boldsymbol{r}\right)\)`, grown best-first to depth `\(d\)`
     
-    b) Update the fitted model with a shrunken version of $\tilde{g}_b$: $\widehat{G}_b = \widehat{G}_{b - 1} + \epsilon \tilde{g}_b$
+    b) Update the fitted model with a shrunken version of `\(\tilde{g}_b\)`: `\(\widehat{G}_b = \widehat{G}_{b - 1} + \epsilon \tilde{g}_b\)`
     
-    c) Update the residuals accordingly: $r_i = r_i - \epsilon \tilde{g}_b$, $i = 1, 2, \dots, n$
+    c) Update the residuals accordingly: `\(r_i = r_i - \epsilon \tilde{g}_b\)`, `\(i = 1, 2, \dots, n\)`
     
-3. Return the sequence of fitted functions $\widehat{G}_b$, $b = 1, 2, \dots, B$.
+3. Return the sequence of fitted functions `\(\widehat{G}_b\)`, `\(b = 1, 2, \dots, B\)`.
 
-* Here, $B$, $\epsilon$, and $d$ are tuning parameters
+* Here, `\(B\)`, `\(\epsilon\)`, and `\(d\)` are tuning parameters
 
 * [R code](https://github.com/bgreenwell/MLDay18/blob/master/code/rpartBoost.R)
 
@@ -1427,7 +1319,7 @@ class: center, middle
     
     - Not currently listed on CRAN
     
-* [`xgboost`](https://github.com/dmlc/xgboost): <span style="color:DeepSkyBlue">eXtreme Gradient Boosting</span>
+* [`xgboost`](https://github.com/dmlc/xgboost): &lt;span style="color:DeepSkyBlue"&gt;eXtreme Gradient Boosting&lt;/span&gt;
 
     - Widely used by data scientists to achieve **state-of-the-art** results across many machine learning challenges (e.g., Kaggle)
 
@@ -1441,9 +1333,7 @@ class: center, middle
     
     - Parallel tree boosting and GPU support!!
 
-```{r gpu, echo=FALSE, out.width="50%"}
-knitr::include_graphics("figures/gpu.jpg")
-```
+&lt;img src="figures/gpu.jpg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 * [`lightgbm`](https://github.com/Microsoft/LightGBM):  
@@ -1478,25 +1368,32 @@ knitr::include_graphics("figures/gpu.jpg")
 
 ## Boston housing example
 
-```{r boston_gbm}
+
+```r
 # Load required packages
 library(gbm)
 
 # Fit a GBM to the Boston housing data
 set.seed(1053)  # for reproducibility
-boston_gbm <- gbm(
+boston_gbm &lt;- gbm(
   cmedv ~ ., 
   data = boston, 
-  var.monotone = NULL,        #<<
-  distribution = "gaussian",  # "benoulli", "coxph", etc. #<<
-  n.trees = 10000,            #<<
-  interaction.depth = 5,      #<<
-  n.minobsinnode = 10,        #<<
-  shrinkage = 0.005,          #<<
-  bag.fraction = 1,           #<<
-  train.fraction = 1,         #<<
+* var.monotone = NULL,
+* distribution = "gaussian",  # "benoulli", "coxph", etc.
+* n.trees = 10000,
+* interaction.depth = 5,
+* n.minobsinnode = 10,
+* shrinkage = 0.005,
+* bag.fraction = 1,
+* train.fraction = 1,
   cv.folds = 10  # k-fold CV often gives the best results
 )
+```
+
+```
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
+## &lt;simpleError in parse_block(g[-1], g[1], params.src): duplicate label 'r-prerequisites'&gt;
 ```
 
 
@@ -1504,12 +1401,15 @@ boston_gbm <- gbm(
 
 ## Boston housing example
 
-```{r boston_gbm_best, out.width="50%"}
-best_iter <- gbm.perf(
+
+```r
+best_iter &lt;- gbm.perf(
   boston_gbm, 
-  method = "cv"  # or "OOB" or "test" #<<
+* method = "cv"  # or "OOB" or "test"
 )
 ```
+
+&lt;img src="figures/boston_gbm_best-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1519,16 +1419,22 @@ best_iter <- gbm.perf(
 .pull-left[
 
 ### Brute force method:
-```{r randomForest-pdp-timing}
+
+```r
 system.time(
-  pd1 <- partial(
+  pd1 &lt;- partial(
     boston_gbm, 
     pred.var = c("lon", "nox"),
-    recursive = FALSE,  #<<
+*   recursive = FALSE,
     chull = TRUE, 
-    n.trees = best_iter  #<<
+*   n.trees = best_iter
   )
 )
+```
+
+```
+##    user  system elapsed 
+## 106.060   0.032 106.084
 ```
 
 ]
@@ -1536,16 +1442,22 @@ system.time(
 .pull-right[
 
 ### Recursive method:
-```{r gbm-pdp-timing}
+
+```r
 system.time(
-  pd2 <- partial(
+  pd2 &lt;- partial(
     boston_gbm, 
     pred.var = c("lon", "nox"),
-    recursive = TRUE,  #<<
+*   recursive = TRUE,
     chull = TRUE, 
-    n.trees = best_iter  #<<
+*   n.trees = best_iter
   )
 )
+```
+
+```
+##    user  system elapsed 
+##   0.424   0.028   0.452
 ```
 
 ]
@@ -1555,10 +1467,13 @@ system.time(
 
 ## Partial dependence plots
 
-```{r boston-pdps, fig.width=8, fig.height=4}
+
+```r
 # Display plots side-by-side
 grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 ```
+
+&lt;img src="figures/boston-pdps-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1571,7 +1486,7 @@ grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 
 * Contains the sale of individual residential property in Ames, Iowa from 2006 to 2010
 
-* Contains $N = 2930$ observations and $p = 80$ features involved in assessing home values
+* Contains `\(N = 2930\)` observations and `\(p = 80\)` features involved in assessing home values
 
 * Lots of potential for *feature engineering*!!
 
@@ -1579,14 +1494,17 @@ grid.arrange(autoplot(pd1), autoplot(pd2), ncol = 2)
 
 .pull-right[
 
-```{r ames-densities, out.width="70%"}
-ames <- AmesHousing::make_ames()
+
+```r
+ames &lt;- AmesHousing::make_ames()
 ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) + 
-  ggridges::geom_density_ridges(aes(fill = Overall_Qual)) +  #<<
+* ggridges::geom_density_ridges(aes(fill = Overall_Qual)) +
   scale_x_continuous(labels = scales::dollar) +
   labs(x = "Sale price", y = "Overall quality") +
   theme_light() + theme(legend.position = "none")
 ```
+
+&lt;img src="figures/ames-densities-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 **Source:** [Bradley Boehmke](https://github.com/bradleyboehmke)
 
@@ -1601,31 +1519,32 @@ ggplot(ames, aes(x = Sale_Price, y = Overall_Qual)) +
 
 .pull-left[
 
-```{r ames-xgboost}
+
+```r
 # Load required packages
 library(xgboost)
 
 # Construct data set
-ames <- AmesHousing::make_ames()
+ames &lt;- AmesHousing::make_ames()
 
-# Feature matrix  # or xgb.DMatrix or sparse matrix  #<<
-X <- data.matrix(subset(ames, select = -Sale_Price))
+*# Feature matrix  # or xgb.DMatrix or sparse matrix
+X &lt;- data.matrix(subset(ames, select = -Sale_Price))
 
 # Fit an XGBoost model
 set.seed(203)  # for reproducibility
-ames_xgb <- xgboost(         # tune using `xgb.cv()`
+ames_xgb &lt;- xgboost(         # tune using `xgb.cv()`
   data = X, 
   label = ames$Sale_Price, 
-  objective = "reg:linear",  # loss function #<<
-  nrounds = 2771,            # number of trees  #<<
-  max_depth = 5,             # interaction depth  #<<
-  eta = 0.01,                # learning rate  #<<
-  subsample = 1,             #<<
-  colsample = 1,             #<<
-  num_parallel_tree = 1,     #<<
-  eval_metric = "rmse",      #<<
+* objective = "reg:linear",  # loss function
+* nrounds = 2771,            # number of trees
+* max_depth = 5,             # interaction depth
+* eta = 0.01,                # learning rate
+* subsample = 1,
+* colsample = 1,
+* num_parallel_tree = 1,
+* eval_metric = "rmse",
   verbose = 0,
-  save_period = NULL         #<<
+* save_period = NULL
 )
 ```
 
@@ -1633,34 +1552,7 @@ ames_xgb <- xgboost(         # tune using `xgb.cv()`
 
 .pull-right[
 
-```{r ames-xgboost-cv, echo=FALSE, out.width="100%"}
-# Use k-fold cross-validation to find the "optimal" number of trees
-set.seed(1214)  # for reproducibility
-ames_xgb_cv <- xgb.cv(
-  data = X, 
-  label = ames$Sale_Price, 
-  objective = "reg:linear",
-  nrounds = 10000, 
-  max_depth = 5, 
-  eta = 0.01, 
-  subsample = 1,          
-  colsample = 1,          
-  num_parallel_tree = 1,  
-  eval_metric = "rmse",   
-  early_stopping_rounds = 50,
-  verbose = 0,
-  nfold = 5
-)
-
-# Plot cross-validation results
-plot(test_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, type = "l", 
-     ylim = c(0, 200000), xlab = "Number of trees", ylab = "RMSE",
-     main = "Results from using xgb.cv()")
-lines(train_rmse_mean ~ iter, data = ames_xgb_cv$evaluation_log, col = "red2")
-abline(v = ames_xgb_cv$best_iteration, lty = 2)
-legend("topright", legend = c("Train", "CV"), lty = 1, col = c("red2", 1),
-       inset = 0.15)
-```
+&lt;img src="figures/ames-xgboost-cv-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ]
 
@@ -1671,63 +1563,56 @@ legend("topright", legend = c("Train", "CV"), lty = 1, col = c("red2", 1),
 
 ## Ames housing data
 
-```{r xgboost-vip, fig.width=12, fig.height=4}
+
+```r
 # Variable importance plots
-p1 <- vip(ames_xgb, feature_names = colnames(X), type = "Gain")
-p2 <- vip(ames_xgb, feature_names = colnames(X), type = "Cover")
-p3 <- vip(ames_xgb, feature_names = colnames(X), type = "Frequency")
+p1 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Gain")
+p2 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Cover")
+p3 &lt;- vip(ames_xgb, feature_names = colnames(X), type = "Frequency")
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
+&lt;img src="figures/xgboost-vip-1.svg" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
 ## Ames housing data
 
-```{r xgboost-vip-2, out.width="50%"}
+
+```r
 # By default, `vip()` plots the top 10 features
 vip(ames_xgb, feature_names = colnames(X), type = "Gain", 
     num_features = nrow(X), bar = FALSE)
 ```
 
+&lt;img src="figures/xgboost-vip-2-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
 ## Ames housing data
 
-```{r xgboost-pdp, fig.width=12, fig.height=4}
+
+```r
 # Partial dependence plots
-oq_ice <- partial(ames_xgb, pred.var = "Overall_Qual", ice = TRUE, 
+oq_ice &lt;- partial(ames_xgb, pred.var = "Overall_Qual", ice = TRUE, 
                   center = TRUE, train = X)
-p4 <- autoplot(partial(ames_xgb, pred.var = "Gr_Liv_Area", train = X))
-p5 <- autoplot(partial(ames_xgb, pred.var = "Garage_Cars", train = X))
-p6 <- autoplot(oq_ice, alpha = 0.1)
+p4 &lt;- autoplot(partial(ames_xgb, pred.var = "Gr_Liv_Area", train = X))
+p5 &lt;- autoplot(partial(ames_xgb, pred.var = "Garage_Cars", train = X))
+p6 &lt;- autoplot(oq_ice, alpha = 0.1)
 grid.arrange(p4, p5, p6, ncol = 3)
 ```
 
+&lt;img src="figures/xgboost-pdp-1.svg" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
 ## Ames housing data
 
 
-```{r xgboost-pdp-vi, echo=FALSE, fig.width=9, fig.height=6}
-# Partial dependence plots for the top/bottom three features
-ames_vi <- vi(ames_xgb, feature_names = colnames(X), type = "Gain")
-feats <- c(head(ames_vi, n = 3)$Variable, tail(ames_vi, n = 3)$Variable)
-pds <- lapply(feats, FUN = function(x) {
-  pd <- cbind(x, partial(ames_xgb, pred.var = x, train = X))
-  names(pd) <- c("xvar", "xval", "yhat")
-  pd
-})
-pds <- do.call(rbind, pds)
-ggplot(pds, aes(x = xval, y = yhat)) +
-  geom_line(size = 1.5) +
-  geom_hline(yintercept = mean(ames$Sale_Price), linetype = 2, col = "red2") +
-  facet_wrap( ~ xvar, scales = "free_x") +
-  labs(x = "", y = "Partial dependence") +
-  theme_light()
-```
+&lt;img src="figures/xgboost-pdp-vi-1.svg" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1740,7 +1625,7 @@ ggplot(pds, aes(x = xval, y = yhat)) +
 
 .pull-left[
 
-#### <span style="color:MediumSeaGreen">Random forests:</span>
+#### &lt;span style="color:MediumSeaGreen"&gt;Random forests:&lt;/span&gt;
 
 * Builds an ensemble of fully grown decision trees (**low bias, high variance**)
 
@@ -1758,7 +1643,7 @@ ggplot(pds, aes(x = xval, y = yhat)) +
 
 .pull-right[
 
-#### <span style="color:MediumSeaGreen">Gradient boosting machines:</span>
+#### &lt;span style="color:MediumSeaGreen"&gt;Gradient boosting machines:&lt;/span&gt;
 
 * Builds an ensemble of small decision trees (**high bias, low variance**)
 
@@ -1779,6 +1664,98 @@ ggplot(pds, aes(x = xval, y = yhat)) +
 
 ## Questions?
 
-```{r, echo=FALSE, out.width="100%"}
-knitr::include_graphics("figures/questions.png")
-```
+&lt;img src="figures/questions.png" width="100%" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<script src="libs/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();
+(function(time) {
+  var d2 = function(number) {
+    return ('0' + number).slice(-2); // left-pad 0 to minutes/seconds
+  },
+
+  time_format = function(total) {
+    var secs = Math.abs(total) / 1000;
+    var h = Math.floor(secs / 3600);
+    var m = Math.floor(secs % 3600 / 60);
+    var s = Math.round(secs % 60);
+    var res = d2(m) + ':' + d2(s);
+    if (h > 0) res = h + ':' + res;
+    return res;  // [hh:]mm:ss
+  },
+
+  slide_number_div = function(i) {
+    return document.getElementsByClassName('remark-slide-number').item(i);
+  },
+
+  current_page_number = function(i) {
+    return slide_number_div(i).firstChild.textContent;  // text "i / N"
+  };
+
+  var timer = document.createElement('span'); timer.id = 'slide-time-left';
+  var time_left = time, k = slideshow.getCurrentSlideIndex(),
+      last_page_number = current_page_number(k);
+
+  setInterval(function() {
+    time_left = time_left - 1000;
+    timer.innerHTML = ' ' + time_format(time_left);
+    if (time_left < 0) timer.style.color = 'red';
+  }, 1000);
+
+  slide_number_div(k).appendChild(timer);
+
+  slideshow.on('showSlide', function(slide) {
+    var i = slide.getSlideIndex(), n = current_page_number(i);
+    // reset timer when a new slide is shown and the page number is changed
+    if (last_page_number !== n) {
+      time_left = time; last_page_number = n;
+      timer.innerHTML = ' ' + time_format(time); timer.style.color = null;
+    }
+    slide_number_div(i).appendChild(timer);
+  });
+})(60000);</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_HTMLorMML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
