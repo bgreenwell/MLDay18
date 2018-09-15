@@ -14,6 +14,8 @@ R programming language:
 -   [Gradient boosting
     machines](https://projecteuclid.org/euclid.aos/1013203451)
 
+[Launch slides](https://bgreenwell.github.io/MLDay18/MLDay18.html#1)
+
 Abstract
 ========
 
